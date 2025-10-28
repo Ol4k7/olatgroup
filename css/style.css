@@ -89,7 +89,7 @@ header.shrink {
 }
 
 .logo span {
-  color: var(--primary);
+  color: var(--text);
   font-weight: 600;
 }
 
