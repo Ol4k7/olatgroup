@@ -54,7 +54,7 @@ header.shrink {
 }
 
 .logo span {
-  color: #0078ff;
+  color: #0a1d3a;
 }
 
 /* === NAVIGATION === */
@@ -327,7 +327,6 @@ footer {
   position: absolute;
   width: 100%;
   height: 100%;
-:;
   backface-visibility: hidden;
   border-radius: 24px;
   padding: 2.5rem;
@@ -506,7 +505,7 @@ footer {
   }
 
   .flip-card {
-    height: 420px;
+    height: 460px;
   }
 
   .flip-front h2,
@@ -516,5 +515,58 @@ footer {
 
   .flip-back {
     padding: 2rem;
+  }
+}
+
+/* === CONTACT LIST WITH ICONS === */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+}
+
+.contact-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #0a1d3a;
+}
+
+.contact-list i {
+  font-size: 1.3rem;
+  color: #0078ff;
+  width: 24px;
+  text-align: center;
+}
+
+.contact-list a {
+  color: #0078ff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.contact-list a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.contact-list strong {
+  min-width: 70px;
+  color: #0a1d3a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact-list li {
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+  }
+  .contact-list strong {
+    min-width: auto;
+    display: block;
+    margin-bottom: 0.2rem;
   }
 }
