@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Upload Projects</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #0066ff; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Inter', sans-serif; background: #f0f4f8; padding: 2rem; }
+    .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    h1 { font-family: 'Sora', sans-serif; color: var(--primary); text-align: center; margin-bottom: 1.5rem; }
+    form { display: grid; gap: 1rem; }
+    input, textarea, select, button { padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; }
+    button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; }
+    button:hover { background: #0052cc; }
+    .success { color: green; text-align: center; margin-top: 1rem; }
+    .error { color: red; text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Upload Project</h1>
+    <form id="uploadForm">
+      <input type="text" id="title" placeholder="Project Title" required>
+      <textarea id="description" placeholder="Description" rows="3"></textarea>
+      <input type="url" id="url" placeholder="Live URL (Web only)">
+      <select id="service" required>
+        <option value="">Select Service</option>
+        <option value="facilities">Facilities Management</option>
+        <option value="digital">Digital Solutions</option>
+      </select>
+      <select id="type" style="display:none;">
+        <option value="web">Web Design</option>
+        <option value="graphics">Graphics Design</option>
+      </select>
+      <select id="category" style="display:none;">
+        <option value="Logos">Logos</option>
+        <option value="Banners">Banners</option>
+        <option value="Social Media">Social Media</option>
+        <option value="Brochures">Brochures</option>
+      </select>
+      <input type="file" id="image" accept="image/*" required>
+      <button type="submit">Upload Project</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+    const firebaseConfig = { /* SAME AS ABOVE */ };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const form = document.getElementById("uploadForm");
+    const serviceSelect = document.getElementById("service");
+    const typeSelect = document.getElementById("type");
+    const categorySelect = document.getElementById("category");
+
+    serviceSelect.addEventListener("change", () => {
+      const isDigital = serviceSelect.value === "digital";
+      typeSelect.style.display = isDigital ? "block" : "none";
+      categorySelect.style.display = isDigital && typeSelect.value === "graphics" ? "block" : "none";
+    });
+
+    typeSelect.addEventListener("change", () => {
+      categorySelect.style.display = typeSelect.value === "graphics" ? "block" : "none";
+    });
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const status = document.getElementById("status");
+      status.textContent = "Uploading...";
+
+      try {
+        const file = document.getElementById("image").files[0];
+        const storageRef = ref(storage, `projects/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        const imageUrl = await getDownloadURL(storageRef);
+
+        const data = {
+          title: document.getElementById("title").value,
+          description: document.getElementById("description").value,
+          image: imageUrl,
+          timestamp: serverTimestamp()
+        };
+
+        if (serviceSelect.value === "digital") {
+          data.type = typeSelect.value;
+          if (typeSelect.value === "web") data.url = document.getElementById("url").value;
+          if (typeSelect.value === "graphics") data.category = categorySelect.value;
+        }
+
+        await addDoc(collection(db, serviceSelect.value), data);
+        status.innerHTML = `<span class="success">Project uploaded successfully!</span>`;
+        form.reset();
+      } catch (err) {
+        status.innerHTML = `<span class="error">Upload failed. Try again.</span>`;
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

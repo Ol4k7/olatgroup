@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Olat Group Services — Facilities & Digital">
   <title>Our Services | Olat Group</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDUiIGhlaWdodD0iNDUiIHZpZXdCb3g9IjAgMCA0NSAieG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMi41IiBjeT0iMjIuNSIgcj0iMjAiIGZpbGw9IiMwMDc4ZmYiLz48dGV4dCB4PSIyMi41IiB5PSIyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSI+TyI8L3RleHQ+PC9zdmc+" type="image/svg+xml">
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDUiIGhlaWdodD0iNDUiIHZpZXdCb3g9IjAgMCA0NSAieG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMi41IiBjeT0iMjIuNSIgcj0iMjAiIGZpbGw9IiMwMDc4ZmYiLz48dGV4dCB4PSIyMi41IiB5PSIyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSI+TyI8L3RleHQ+PC9zdmc+" type="image/svg+xml">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
@@ -19,7 +26,7 @@
       <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDUiIGhlaWdodD0iNDUiIHZpZXdCb3g9IjAgMCA0NSAieG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMi41IiBjeT0iMjIuNSIgcj0iMjAiIGZpbGw9IiMwMDc4ZmYiLz48dGV4dCB4PSIyMi41IiB5PSIyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSI+TyI8L3RleHQ+PC9zdmc+" alt="Olat Group Logo">
       <h1>Olat Group <span>Limited</span></h1>
     </div>
-    <button class="menu-toggle" id="menuToggle">&#9776;</button>
+    <button class="menu-toggle" id="menuToggle">Menu</button>
     <nav>
       <ul id="navList">
         <li><a href="index.html">Home</a></li>
@@ -41,9 +48,7 @@
     <!-- CARD 1: Facilities -->
     <div class="flip-card" data-service="facilities">
       <div class="flip-inner">
-        <div class="flip-front">
-          <h2>Facilities Management</h2>
-        </div>
+        <div class="flip-front"><h2>Facilities Management</h2></div>
         <div class="flip-back">
           <h2>Facilities Management</h2>
           <p>We deliver <strong>world-class facility management</strong> that keeps your spaces clean, safe, and efficient — every single day.</p>
@@ -54,7 +59,10 @@
             <li>24/7 emergency response</li>
           </ul>
           <p><em>Let us handle the operations — you focus on growth.</em></p>
-          <button class="back-flip">Back</button>
+          <div class="flip-actions">
+            <button class="back-flip">Back</button>
+            <button class="explore-btn" data-target="facilities">Explore</button>
+          </div>
         </div>
       </div>
     </div>
@@ -62,9 +70,7 @@
     <!-- CARD 2: Digital -->
     <div class="flip-card" data-service="digital">
       <div class="flip-inner">
-        <div class="flip-front">
-          <h2>Digital Solutions</h2>
-        </div>
+        <div class="flip-front"><h2>Digital Solutions</h2></div>
         <div class="flip-back">
           <h2>Digital Solutions</h2>
           <p>We build <strong>digital experiences</strong> that turn ideas into impact — from websites to branding.</p>
@@ -75,16 +81,159 @@
             <li>UI/UX & digital strategy</li>
           </ul>
           <p><em>Your vision. Our code. Real results.</em></p>
-          <button class="back-flip">Back</button>
+          <div class="flip-actions">
+            <button class="back-flip">Back</button>
+            <button class="explore-btn" data-target="digital">Explore</button>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- PORTFOLIO OVERLAY -->
+  <div id="portfolioOverlay" class="portfolio-overlay">
+    <div class="portfolio-container">
+      <button id="closePortfolio" class="close-btn"><i class="fas fa-times"></i></button>
+      <div id="portfolioContent"></div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer>
     &copy; <span id="year"></span> Olat Group | All Rights Reserved
   </footer>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    async function loadPortfolio(service) {
+        const content = document.getElementById("portfolioContent");
+        content.innerHTML = `<div class="loading">Loading...</div>`;
+
+        try {
+            const res = await fetch(`/api/projects/${service}`);
+            const projects = await res.json();
+    // Same render functions as before (copy from earlier)
+            if (service === "facilities") renderFacilities(projects);
+            else renderDigital(projects);
+        } catch (err) {
+            content.innerHTML = `<p class="error">Failed to load.</p>`;
+        }
+    }
+
+    // Load portfolio data
+    window.loadPortfolio = async function(service) {
+      const content = document.getElementById("portfolioContent");
+      content.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading projects...</div>`;
+
+      try {
+        const q = query(collection(db, service), orderBy("timestamp", "desc"));
+        const snapshot = await getDocs(q);
+        const projects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        if (service === "facilities") {
+          renderFacilities(projects);
+        } else if (service === "digital") {
+          renderDigital(projects);
+        }
+      } catch (err) {
+        content.innerHTML = `<p class="error">Failed to load projects. Please try again later.</p>`;
+        console.error(err);
+      }
+    };
+
+    function renderFacilities(projects) {
+      const html = `
+        <h2>Facilities Projects</h2>
+        <div class="project-grid">
+          ${projects.map(p => `
+            <div class="project-card">
+              <img src="${p.image}" alt="${p.title}">
+              <div class="project-info">
+                <h4>${p.title}</h4>
+                <p>${p.description}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById("portfolioContent").innerHTML = html;
+    }
+
+    function renderDigital(projects) {
+      const web = projects.filter(p => p.type === "web");
+      const graphics = projects.filter(p => p.type === "graphics");
+
+      const tabs = `
+        <div class="portfolio-tabs">
+          <button class="tab-btn active" data-tab="web">Web Design</button>
+          <button class="tab-btn" data-tab="graphics">Graphics Design</button>
+        </div>
+        <div id="tabContent"></div>
+      `;
+
+      document.getElementById("portfolioContent").innerHTML = tabs;
+      document.getElementById("tabContent").innerHTML = renderWeb(web);
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          const tab = btn.dataset.tab;
+          document.getElementById("tabContent").innerHTML = tab === "web" ? renderWeb(web) : renderGraphics(graphics);
+        });
+      });
+    }
+
+    function renderWeb(projects) {
+      return `
+        <div class="project-grid">
+          ${projects.map(p => `
+            <a href="${p.url}" target="_blank" class="project-card web">
+              <img src="${p.image}" alt="${p.title}">
+              <div class="overlay"><i class="fas fa-external-link-alt"></i> View Live Site</div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderGraphics(projects) {
+      const categories = {};
+      projects.forEach(p => {
+        if (!categories[p.category]) categories[p.category] = [];
+        categories[p.category].push(p);
+      });
+
+      return Object.entries(categories).map(([cat, items]) => `
+        <div class="graphics-category">
+          <h3>${cat}</h3>
+          <div class="gallery-grid">
+            ${items.map(p => `<img src="${p.image}" alt="${p.title}">`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Open/Close Portfolio
+    document.querySelectorAll(".explore-btn").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        const service = btn.dataset.target;
+        document.getElementById("portfolioOverlay").classList.add("active");
+        loadPortfolio(service);
+      });
+    });
+
+    document.getElementById("closePortfolio").addEventListener("click", () => {
+      document.getElementById("portfolioOverlay").classList.remove("active");
+    });
+
+    document.getElementById("portfolioOverlay").addEventListener("click", e => {
+      if (e.target === document.getElementById("portfolioOverlay")) {
+        document.getElementById("portfolioOverlay").classList.remove("active");
+      }
+    });
+  </script>
 
   <script src="js/script.js"></script>
 </body>

@@ -623,3 +623,212 @@ footer {
   .flip-front h2, .flip-back h2 { font-size: 1.55rem; }
   .flip-back { padding: 2rem; }
 }
+
+/* === FLIP ACTIONS === */
+.flip-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.explore-btn {
+  background: rgba(255,255,255,0.3);
+  color: white;
+  border: 1.8px solid rgba(255,255,255,0.5);
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: var(--transition);
+  margin-top: 1.8rem;
+}
+
+.explore-btn:hover {
+  background: white;
+  color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+/* === PORTFOLIO OVERLAY === */
+.portfolio-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(12px);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  overflow-y: auto;
+}
+
+.portfolio-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.portfolio-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: 0.3s;
+}
+
+.close-btn:hover {
+  background: white;
+  color: #000;
+  transform: scale(1.1);
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.loading i { margin-right: 0.5rem; }
+
+/* === PROJECT GRID === */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.project-card {
+  background: rgba(255,255,255,0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+}
+
+.project-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.project-info {
+  padding: 1.2rem;
+  color: white;
+}
+
+.project-info h4 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.project-info p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* Web Card Overlay */
+.project-card.web .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,102,255,0.9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.project-card.web:hover .overlay {
+  opacity: 1;
+}
+
+/* Tabs */
+.portfolio-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: 0.3s;
+}
+
+.tab-btn.active {
+  border-bottom-color: white;
+  color: white;
+}
+
+.tab-btn:hover:not(.active) {
+  color: #ccc;
+}
+
+/* Graphics Gallery */
+.graphics-category {
+  margin-bottom: 3rem;
+}
+
+.graphics-category h3 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.gallery-grid img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.gallery-grid img:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .flip-actions { flex-direction: column; }
+  .explore-btn, .back-flip { width: 100%; }
+  .project-grid { grid-template-columns: 1fr; }
+  .portfolio-tabs { flex-direction: column; }
+  .tab-btn { text-align: center; }
+}
