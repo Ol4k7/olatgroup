@@ -239,6 +239,7 @@ nav ul li a.active::after {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: white;
   box-shadow: 0 6px 18px var(--shadow);
+  text-decoration: none;
 }
 
 .btn.dark:hover {
@@ -326,7 +327,7 @@ nav ul li a.active::after {
 }
 
 .contact-card {
-  width: 340px;
+  width: 470px;
   background: var(--card-bg);
   backdrop-filter: blur(14px);
   padding: 2rem;
@@ -348,7 +349,7 @@ nav ul li a.active::after {
 
 .contact-list li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   margin-bottom: 1.1rem;
   font-size: 1.02rem;
@@ -374,7 +375,7 @@ nav ul li a.active::after {
 }
 
 .contact-list a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .contact-list strong {
@@ -475,6 +476,7 @@ footer {
   height: 540px;
   position: relative;
   cursor: pointer;
+
 }
 
 .flip-inner {
@@ -509,6 +511,15 @@ footer {
 
 .flip-front {
   background: linear-gradient(135deg, #ffffff, #f0f7ff);
+
+  background: var(--card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+  padding: 2.2rem;
+  transition: var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.4)
 }
 
 .flip-back {
