@@ -7,7 +7,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #f6fbff, #e1f1ff);
+  background: linear-gradient(135deg, #e1ecf5, #bdcfdf);
   color: #0a1d3a;
   overflow-x: hidden;
   scroll-behavior: smooth;
@@ -118,8 +118,8 @@ nav ul li a.active {
 
 /* === HERO IMAGE (CIRCLE) === */
 .hero-image {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
   overflow: hidden;
   border: 4px solid #0066cc;
