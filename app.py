@@ -14,23 +14,21 @@ from werkzeug.utils import secure_filename
 # -------------------------------------------------
 # CONFIG
 # -------------------------------------------------
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+project_root = os.path.dirname(os.path.abspath(__file__))  # ← FIXED
 UPLOAD_FOLDER = os.path.join(project_root, 'public', 'projects')
 DATA_FILE = os.path.join(project_root, 'data', 'projects.json')
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 ADMIN_PASSWORD = "olat2025"
 
-# Create dirs/files if missing (Vercel needs this)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
 
-# Init empty JSON if missing
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({"facilities": [], "digital": []}, f, indent=2)
 
 app = Flask(__name__, static_folder='static', static_url_path='/')
-app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'  # CHANGE IN PRODUCTION!
+app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'
 
 
 # -------------------------------------------------
