@@ -20,14 +20,14 @@ DATA_FILE = os.path.join(project_root, 'data', 'projects.json')
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 ADMIN_PASSWORD = "olat2025"
 
-# Create dirs if missing (Vercel may not have them)
+# Create dirs/files if missing (Vercel needs this)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
 
-# Create empty JSON if missing
+# Init empty JSON if missing
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
-        json.dump({"facilities": [], "digital": []}, f)
+        json.dump({"facilities": [], "digital": []}, f, indent=2)
 
 app = Flask(__name__, static_folder='..', static_url_path='')
 app.secret_key = 'your-secret-key-here'  # CHANGE IN PRODUCTION!
@@ -120,7 +120,7 @@ def get_projects(service):
             data = json.load(f)
         return jsonify(data.get(service, []))
     except Exception as e:
-        print(f"Error loading projects: {e}")  # Log for Vercel
+        print(f"Error loading projects: {e}")  # Vercel log
         return jsonify([])
 
 
@@ -157,7 +157,7 @@ def upload():
             with open(DATA_FILE, 'r') as f:
                 data = json.load(f)
         except Exception as e:
-            print(f"Error reading JSON: {e}")
+            print(f"JSON read error: {e}")
 
         entry = {
             "id": str(uuid.uuid4()),
