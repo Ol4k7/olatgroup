@@ -1,9 +1,15 @@
 import os
 import json
 import uuid
-from flask import Flask, request, jsonify, send_from_directory, abort, session, redirect, url_for
-from werkzeug.utils import secure_filename
 from datetime import datetime
+from functools import wraps   # <-- moved here
+
+from flask import (
+    Flask, request, jsonify, send_from_directory,
+    abort, session, redirect, url_for
+)
+from werkzeug.utils import secure_filename
+
 
 # -------------------------------------------------
 # CONFIG
@@ -17,19 +23,20 @@ ADMIN_PASSWORD = "olat2025"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app = Flask(__name__, static_folder='..', static_url_path='')
-app.secret_key = 'your-secret-key-here'  # Change in production
+app.secret_key = 'your-secret-key-here'   # change in production!
+
 
 # -------------------------------------------------
 # LOGIN DECORATOR
 # -------------------------------------------------
 def login_required(f):
-    from functools import wraps
     @wraps(f)
     def decorated(*args, **kwargs):
         if not session.get('logged_in'):
             return redirect('/admin/login')
         return f(*args, **kwargs)
     return decorated
+
 
 # -------------------------------------------------
 # 1. ROOT & STATIC
@@ -38,6 +45,7 @@ def login_required(f):
 def index():
     return send_from_directory('..', 'index.html')
 
+
 @app.route('/<path:path>')
 def serve_static(path):
     blocked = ['api/', 'projects/', 'admin/login', 'admin/upload']
@@ -45,12 +53,14 @@ def serve_static(path):
         abort(404)
     return send_from_directory('..', path)
 
+
 # -------------------------------------------------
-# 2. PROJECT IMAGES
+# 2. PROJECT IMAGES (public path)
 # -------------------------------------------------
-@app.route('/projects/<filename>')
+@app.route('/public/projects/<filename>')
 def serve_project_image(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
 
 # -------------------------------------------------
 # 3. ADMIN: LOGIN
@@ -64,6 +74,7 @@ def admin_login():
         return "Invalid password", 403
     return send_from_directory('..', 'admin/login.html')
 
+
 # -------------------------------------------------
 # 4. ADMIN: LOGOUT
 # -------------------------------------------------
@@ -72,6 +83,7 @@ def admin_logout():
     session.pop('logged_in', None)
     return redirect('/')
 
+
 # -------------------------------------------------
 # 5. ADMIN: UPLOAD PAGE
 # -------------------------------------------------
@@ -79,6 +91,7 @@ def admin_logout():
 @login_required
 def admin_upload_page():
     return send_from_directory('..', 'admin/upload.html')
+
 
 # -------------------------------------------------
 # 6. API: GET PROJECTS
@@ -93,8 +106,9 @@ def get_projects(service):
         with open(DATA_FILE, 'r') as f:
             data = json.load(f)
         return jsonify(data.get(service, []))
-    except:
+    except Exception:
         return jsonify([])
+
 
 # -------------------------------------------------
 # 7. API: UPLOAD
@@ -121,15 +135,17 @@ def upload():
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     image.save(filepath)
 
-    image_url = f"/projects/{filename}"
+    # NOTE: we store the *public* URL so Vercel can serve it directly
+    image_url = f"/public/projects/{filename}"
 
+    # Load existing data
     data = {"facilities": [], "digital": []}
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, 'r') as f:
                 data = json.load(f)
-        except:
-            pass
+        except Exception:
+            pass   # corrupted → start fresh
 
     entry = {
         "id": str(uuid.uuid4()),
@@ -150,7 +166,15 @@ def upload():
     try:
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f, indent=2)
-    except:
+    except Exception:
         return jsonify({"error": "Save failed"}), 500
 
     return jsonify({"success": True, "title": title})
+
+
+# -------------------------------------------------
+# RUN SERVER (for local dev)
+# -------------------------------------------------
+if __name__ == '__main__':
+    # 0.0.0.0 lets you access from phone on same Wi-Fi
+    app.run(host='0.0.0.0', port=5000, debug=True)
