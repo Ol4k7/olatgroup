@@ -1,11 +1,12 @@
 {
   "version": 2,
   "builds": [
-    { "src": "admin/app.py", "use": "@vercel/python" }
+    { "src": "api/app.py", "use": "@vercel/python" }
   ],
   "routes": [
-    { "src": "/admin/(.*)", "dest": "/admin/app.py" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/projects/(.*)", "dest": "/public/projects/$1" }
+    { "src": "/api/(.*)", "dest": "/api/app.py" },
+    { "src": "/projects/(.*)", "dest": "/public/projects/$1" },
+    { "src": "/admin/(.*)", "dest": "/admin/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }

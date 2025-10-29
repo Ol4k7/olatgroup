@@ -26,7 +26,7 @@
       <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDUiIGhlaWdodD0iNDUiIHZpZXdCb3g9IjAgMCA0NSAieG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMi41IiBjeT0iMjIuNSIgcj0iMjAiIGZpbGw9IiMwMDc4ZmYiLz48dGV4dCB4PSIyMi41IiB5PSIyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSI+TyI8L3RleHQ+PC9zdmc+" alt="Olat Group Logo">
       <h1>Olat Group <span>Limited</span></h1>
     </div>
-    <button class="menu-toggle" id="menuToggle">Menu</button>
+    <button class="menu-toggle" id="menuToggle">&#9776;</button>
     <nav>
       <ul id="navList">
         <li><a href="index.html">Home</a></li>
@@ -103,51 +103,40 @@
     &copy; <span id="year"></span> Olat Group | All Rights Reserved
   </footer>
 
-  <!-- Firebase SDK -->
-  <script type="module">
+  <!-- PYTHON API SCRIPT (NO FIREBASE) -->
+  <script>
+    // Set current year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Load portfolio from Python API
     async function loadPortfolio(service) {
-        const content = document.getElementById("portfolioContent");
-        content.innerHTML = `<div class="loading">Loading...</div>`;
-
-        try {
-            const res = await fetch(`/api/projects/${service}`);
-            const projects = await res.json();
-    // Same render functions as before (copy from earlier)
-            if (service === "facilities") renderFacilities(projects);
-            else renderDigital(projects);
-        } catch (err) {
-            content.innerHTML = `<p class="error">Failed to load.</p>`;
-        }
-    }
-
-    // Load portfolio data
-    window.loadPortfolio = async function(service) {
       const content = document.getElementById("portfolioContent");
       content.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading projects...</div>`;
 
       try {
-        const q = query(collection(db, service), orderBy("timestamp", "desc"));
-        const snapshot = await getDocs(q);
-        const projects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const res = await fetch(`/api/projects/${service}`);
+        if (!res.ok) throw new Error("Failed to fetch");
+        const projects = await res.json();
 
         if (service === "facilities") {
           renderFacilities(projects);
-        } else if (service === "digital") {
+        } else {
           renderDigital(projects);
         }
       } catch (err) {
         content.innerHTML = `<p class="error">Failed to load projects. Please try again later.</p>`;
         console.error(err);
       }
-    };
+    }
 
     function renderFacilities(projects) {
       const html = `
         <h2>Facilities Projects</h2>
         <div class="project-grid">
+          ${projects.length === 0 ? '<p>No projects yet.</p>' : ''}
           ${projects.map(p => `
             <div class="project-card">
-              <img src="${p.image}" alt="${p.title}">
+              <img src="${p.image}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
               <div class="project-info">
                 <h4>${p.title}</h4>
                 <p>${p.description}</p>
@@ -187,9 +176,10 @@
     function renderWeb(projects) {
       return `
         <div class="project-grid">
+          ${projects.length === 0 ? '<p>No web projects yet.</p>' : ''}
           ${projects.map(p => `
             <a href="${p.url}" target="_blank" class="project-card web">
-              <img src="${p.image}" alt="${p.title}">
+              <img src="${p.image}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
               <div class="overlay"><i class="fas fa-external-link-alt"></i> View Live Site</div>
             </a>
           `).join('')}
@@ -200,15 +190,22 @@
     function renderGraphics(projects) {
       const categories = {};
       projects.forEach(p => {
-        if (!categories[p.category]) categories[p.category] = [];
-        categories[p.category].push(p);
+        const cat = p.category || "Uncategorized";
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(p);
       });
+
+      if (Object.keys(categories).length === 0) {
+        return '<p>No graphics yet.</p>';
+      }
 
       return Object.entries(categories).map(([cat, items]) => `
         <div class="graphics-category">
           <h3>${cat}</h3>
           <div class="gallery-grid">
-            ${items.map(p => `<img src="${p.image}" alt="${p.title}">`).join('')}
+            ${items.map(p => `
+              <img src="${p.image}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+            `).join('')}
           </div>
         </div>
       `).join('');
@@ -235,6 +232,7 @@
     });
   </script>
 
+  <!-- External JS (menu toggle, etc.) -->
   <script src="js/script.js"></script>
 </body>
 </html>

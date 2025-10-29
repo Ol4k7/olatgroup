@@ -1,4 +1,22 @@
 {
-  "facilities": [],
-  "digital": []
+  "facilities": [
+    {
+      "id": "e771a977-c80d-47d9-9a46-f059d378ab38",
+      "title": "big house",
+      "description": "big house project",
+      "image": "/projects/a8f2cd79c42d4841933d2e2e3ccdaa61_handshake.jpg",
+      "timestamp": "2025-10-29T09:51:12.363517"
+    }
+  ],
+  "digital": [
+    {
+      "id": "2f48b691-17aa-4097-951f-4c83724e8bdb",
+      "title": "web project",
+      "description": "responsive web",
+      "image": "/projects/c9542d15da9c412984502863363a24c4_handshake.jpg",
+      "timestamp": "2025-10-29T09:55:44.093898",
+      "type": "web",
+      "url": "https://www.google.com/"
+    }
+  ]
 }

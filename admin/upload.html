@@ -1,45 +1,165 @@
 <!DOCTYPE html>
-<html><head><title>Upload Project</title><style>
-  body{font-family:Arial;background:#f0f4f8;padding:2rem}
-  .container{max-width:600px;margin:0 auto;background:white;padding:2rem;border-radius:12px}
-  input,textarea,select,button{width:100%;padding:0.8rem;margin:0.5rem 0;border:1px solid #ddd;border-radius:8px}
-  button{background:#0066ff;color:white;border:none;font-weight:600;cursor:pointer}
-  .success{color:green;margin:1rem 0}
-</style></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Upload | Olat Group</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #0066ff; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: #f4f7fa; 
+      padding: 2rem; 
+      display: flex; 
+      align-items: center; 
+      min-height: 100vh;
+    }
+    .container { 
+      max-width: 600px; 
+      width: 100%; 
+      margin: 0 auto; 
+      background: white; 
+      padding: 2.5rem; 
+      border-radius: 16px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+    }
+    h2 { 
+      font-family: 'Sora', sans-serif;
+      color: var(--primary); 
+      margin-bottom: 1.5rem; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      font-size: 1.6rem;
+    }
+    input, textarea, select, button { 
+      width: 100%; 
+      padding: 0.9rem; 
+      margin: 0.6rem 0; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      font-size: 1rem; 
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+    }
+    button { 
+      background: var(--primary); 
+      color: white; 
+      border: none; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: background 0.3s;
+    }
+    button:hover { background: #0052cc; }
+    .success { color: #10b981; margin-top: 1rem; font-weight: 500; }
+    .error { color: #ef4444; margin-top: 1rem; font-weight: 500; }
+    .logout { 
+      font-size: 0.9rem; 
+      color: var(--primary); 
+      text-decoration: none; 
+      font-weight: 500;
+    }
+    .logout:hover { text-decoration: underline; }
+  </style>
+</head>
 <body>
   <div class="container">
-    <h2>Upload Project <a href="/admin/logout" style="float:right;font-size:0.8rem">Logout</a></h2>
-    {% if request.args.get('success') %}<p class="success">Uploaded!</p>{% endif %}
-    <form method="post" enctype="multipart/form-data">
-      <input type="text" name="title" placeholder="Title" required>
+    <h2>
+      Upload Project
+      <a href="/admin/login.html" class="logout">Logout</a>
+    </h2>
+
+    <form id="uploadForm">
+      <input type="password" name="password" placeholder="Admin Password" required />
+      <input type="text" name="title" placeholder="Project Title" required />
       <textarea name="description" placeholder="Description" rows="3"></textarea>
-      <input type="url" name="url" placeholder="Live URL (Web only)">
-      <select name="service" id="service" required onchange="toggleDigital()">
-        <option value="facilities">Facilities</option>
-        <option value="digital">Digital</option>
+      <input type="url" name="url" placeholder="Live URL (Web only)" />
+
+      <select name="service" id="service" required>
+        <option value="">Select Service</option>
+        <option value="facilities">Facilities Management</option>
+        <option value="digital">Digital Solutions</option>
       </select>
-      <select name="type" id="type" style="display:none">
+
+      <select name="type" id="type" style="display:none;">
         <option value="web">Web Design</option>
-        <option value="graphics">Graphics</option>
+        <option value="graphics">Graphics Design</option>
       </select>
-      <select name="category" id="category" style="display:none">
-        <option>Logos</option><option>Banners</option><option>Social Media</option>
+
+      <select name="category" id="category" style="display:none;">
+        <option value="Logos">Logos</option>
+        <option value="Banners">Banners</option>
+        <option value="Social Media">Social Media</option>
+        <option value="Brochures">Brochures</option>
       </select>
-      <input type="file" name="image" accept="image/*" required>
-      <button type="submit">Upload</button>
+
+      <input type="file" name="image" accept="image/*" required />
+      <button type="submit">Upload Project</button>
     </form>
+
+    <p id="status"></p>
   </div>
+
   <script>
-    function toggleDigital() {
-      const s = document.getElementById('service').value;
-      const t = document.getElementById('type');
-      const c = document.getElementById('category');
-      t.style.display = s === 'digital' ? 'block' : 'none';
-      c.style.display = (s === 'digital' && t.value === 'graphics') ? 'block' : 'none';
-    }
-    document.getElementById('type').onchange = () => {
-      document.getElementById('category').style.display = 
-        document.getElementById('type').value === 'graphics' ? 'block' : 'none';
+    const form = document.getElementById('uploadForm');
+    const status = document.getElementById('status');
+    const service = document.getElementById('service');
+    const type = document.getElementById('type');
+    const category = document.getElementById('category');
+
+    // Toggle type & category based on service
+    service.onchange = () => {
+      const isDigital = service.value === 'digital';
+      type.style.display = isDigital ? 'block' : 'none';
+      category.style.display = 'none';
+      if (!isDigital) type.value = '';
+    };
+
+    type.onchange = () => {
+      category.style.display = type.value === 'graphics' ? 'block' : 'none';
+      if (type.value !== 'graphics') category.value = '';
+    };
+
+    // Handle form submission
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      status.textContent = 'Uploading...';
+      status.className = '';
+
+      const formData = new FormData(form);
+      const serviceValue = service.value;
+
+      // Append service to URL
+      const url = `/api/upload?service=${serviceValue}`;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          status.innerHTML = `<span class="success">Uploaded: "${data.title}"</span>`;
+          form.reset();
+          service.value = '';
+          type.style.display = 'none';
+          category.style.display = 'none';
+        } else {
+          status.innerHTML = `<span class="error">${data.error || 'Upload failed'}</span>`;
+        }
+      } catch (err) {
+        status.innerHTML = `<span class="error">Network error. Try again.</span>`;
+        console.error(err);
+      }
     };
   </script>
-</body></html>
+</body>
+</html>
