@@ -30,7 +30,7 @@ if not os.path.exists(DATA_FILE):
         json.dump({"facilities": [], "digital": []}, f, indent=2)
 
 app = Flask(__name__, static_folder='..', static_url_path='')
-app.secret_key = 'your-secret-key-here'  # CHANGE IN PRODUCTION!
+app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'  # CHANGE IN PRODUCTION!
 
 
 # -------------------------------------------------
