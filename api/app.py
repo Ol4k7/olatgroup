@@ -20,7 +20,14 @@ DATA_FILE = os.path.join(project_root, 'data', 'projects.json')
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 ADMIN_PASSWORD = "olat2025"
 
+# Create dirs if missing (Vercel may not have them)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+
+# Create empty JSON if missing
+if not os.path.exists(DATA_FILE):
+    with open(DATA_FILE, 'w') as f:
+        json.dump({"facilities": [], "digital": []}, f)
 
 app = Flask(__name__, static_folder='..', static_url_path='')
 app.secret_key = 'your-secret-key-here'  # CHANGE IN PRODUCTION!
@@ -93,7 +100,7 @@ def admin_upload_page():
 
 
 # -------------------------------------------------
-# 6. ADMIN: CHECK LOGIN (SECURE)
+# 6. ADMIN: CHECK LOGIN
 # -------------------------------------------------
 @app.route('/admin/check')
 @login_required
@@ -108,13 +115,12 @@ def admin_check():
 def get_projects(service):
     if service not in ['facilities', 'digital']:
         return jsonify([])
-    if not os.path.exists(DATA_FILE):
-        return jsonify([])
     try:
         with open(DATA_FILE, 'r') as f:
             data = json.load(f)
         return jsonify(data.get(service, []))
-    except Exception:
+    except Exception as e:
+        print(f"Error loading projects: {e}")  # Log for Vercel
         return jsonify([])
 
 
@@ -124,62 +130,62 @@ def get_projects(service):
 @app.route('/api/upload', methods=['POST'])
 @login_required
 def upload():
-    title = request.form.get('title')
-    description = request.form.get('description', '')
-    service = request.form.get('service')
-    image = request.files.get('image')
-    url = request.form.get('url', '')
-    type_ = request.form.get('type', '')
-    category = request.form.get('category', '')
+    try:
+        title = request.form.get('title')
+        description = request.form.get('description', '')
+        service = request.form.get('service')
+        image = request.files.get('image')
+        url = request.form.get('url', '')
+        type_ = request.form.get('type', '')
+        category = request.form.get('category', '')
 
-    if not all([title, service, image]):
-        return jsonify({"error": "Missing fields"}), 400
+        if not all([title, service, image]):
+            return jsonify({"error": "Missing fields"}), 400
 
-    ext = image.filename.rsplit('.', 1)[1].lower() if '.' in image.filename else ''
-    if ext not in ALLOWED_EXT:
-        return jsonify({"error": "Invalid image type"}), 400
+        ext = image.filename.rsplit('.', 1)[1].lower() if '.' in image.filename else ''
+        if ext not in ALLOWED_EXT:
+            return jsonify({"error": "Invalid image type"}), 400
 
-    filename = f"{uuid.uuid4().hex}_{secure_filename(image.filename)}"
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    image.save(filepath)
+        filename = f"{uuid.uuid4().hex}_{secure_filename(image.filename)}"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        image.save(filepath)
 
-    image_url = f"/public/projects/{filename}"
+        image_url = f"/public/projects/{filename}"
 
-    data = {"facilities": [], "digital": []}
-    if os.path.exists(DATA_FILE):
+        data = {"facilities": [], "digital": []}
         try:
             with open(DATA_FILE, 'r') as f:
                 data = json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Error reading JSON: {e}")
 
-    entry = {
-        "id": str(uuid.uuid4()),
-        "title": title,
-        "description": description,
-        "image": image_url,
-        "timestamp": datetime.utcnow().isoformat() + "Z"
-    }
-    if service == "digital":
-        entry["type"] = type_
-        if type_ == "web" and url:
-            entry["url"] = url
-        if type_ == "graphics" and category:
-            entry["category"] = category
+        entry = {
+            "id": str(uuid.uuid4()),
+            "title": title,
+            "description": description,
+            "image": image_url,
+            "timestamp": datetime.utcnow().isoformat() + "Z"
+        }
+        if service == "digital":
+            entry["type"] = type_
+            if type_ == "web" and url:
+                entry["url"] = url
+            if type_ == "graphics" and category:
+                entry["category"] = category
 
-    data[service].append(entry)
+        data[service].append(entry)
 
-    try:
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f, indent=2)
-    except Exception:
-        return jsonify({"error": "Save failed"}), 500
 
-    return jsonify({
-        "success": True,
-        "title": title,
-        "id": entry["id"]  # ← Optional but helpful
-    })
+        return jsonify({
+            "success": True,
+            "title": title,
+            "id": entry["id"]
+        })
+    except Exception as e:
+        print(f"Upload error: {e}")
+        return jsonify({"error": "Upload failed"}), 500
 
 
 # -------------------------------------------------
@@ -188,13 +194,11 @@ def upload():
 @app.route('/api/delete/<project_id>', methods=['DELETE'])
 @login_required
 def delete_project(project_id):
-    if not os.path.exists(DATA_FILE):
-        return jsonify({"error": "No data"}), 404
-
     try:
         with open(DATA_FILE, 'r') as f:
             data = json.load(f)
-    except:
+    except Exception as e:
+        print(f"Delete read error: {e}")
         return jsonify({"error": "Failed to read data"}), 500
 
     deleted = False
@@ -216,13 +220,17 @@ def delete_project(project_id):
     try:
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f, indent=2)
-    except:
+    except Exception as e:
+        print(f"Delete save error: {e}")
         return jsonify({"error": "Failed to save"}), 500
 
     if image_to_remove:
         img_path = os.path.join(UPLOAD_FOLDER, image_to_remove)
         if os.path.exists(img_path):
-            os.remove(img_path)
+            try:
+                os.remove(img_path)
+            except Exception as e:
+                print(f"Image remove error: {e}")
 
     return jsonify({"success": True})
 
