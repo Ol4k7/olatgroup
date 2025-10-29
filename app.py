@@ -13,22 +13,21 @@ from werkzeug.utils import secure_filename
 # -------------------------------------------------
 # CONFIG
 # -------------------------------------------------
-UPLOAD_FOLDER = '/tmp/public/projects'
+project_root = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = '/tmp/public/projects'  # Vercel writable dir
 DATA_FILE = '/tmp/data/projects.json'
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 ADMIN_PASSWORD = "olat2025"
 
-# Create dirs/files in /tmp/ (Vercel writable)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
 
-# Init empty JSON if missing
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({"facilities": [], "digital": []}, f, indent=2)
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'  # SECURE
+app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'
 
 
 # -------------------------------------------------
@@ -52,7 +51,7 @@ def index():
 
 @app.route('/<path:path>')
 def serve_static(path):
-    blocked = ['api/', 'projects/', 'admin/login', 'admin/upload']
+    blocked = ['api/', 'public/', 'admin/']
     if any(path.startswith(p) for p in blocked):
         abort(404)
     return send_from_directory('.', path)
