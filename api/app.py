@@ -2,7 +2,7 @@ import os
 import json
 import uuid
 from datetime import datetime
-from functools import wraps   # <-- moved here
+from functools import wraps
 
 from flask import (
     Flask, request, jsonify, send_from_directory,
@@ -23,7 +23,7 @@ ADMIN_PASSWORD = "olat2025"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app = Flask(__name__, static_folder='..', static_url_path='')
-app.secret_key = 'your-secret-key-here'   # change in production!
+app.secret_key = 'your-secret-key-here'  # CHANGE IN PRODUCTION!
 
 
 # -------------------------------------------------
@@ -45,7 +45,6 @@ def login_required(f):
 def index():
     return send_from_directory('..', 'index.html')
 
-
 @app.route('/<path:path>')
 def serve_static(path):
     blocked = ['api/', 'projects/', 'admin/login', 'admin/upload']
@@ -55,7 +54,7 @@ def serve_static(path):
 
 
 # -------------------------------------------------
-# 2. PROJECT IMAGES (public path)
+# 2. PROJECT IMAGES
 # -------------------------------------------------
 @app.route('/public/projects/<filename>')
 def serve_project_image(filename):
@@ -94,7 +93,16 @@ def admin_upload_page():
 
 
 # -------------------------------------------------
-# 6. API: GET PROJECTS
+# 6. ADMIN: CHECK LOGIN (SECURE)
+# -------------------------------------------------
+@app.route('/admin/check')
+@login_required
+def admin_check():
+    return jsonify({"admin": True}), 200
+
+
+# -------------------------------------------------
+# 7. API: GET PROJECTS
 # -------------------------------------------------
 @app.route('/api/projects/<service>')
 def get_projects(service):
@@ -111,7 +119,7 @@ def get_projects(service):
 
 
 # -------------------------------------------------
-# 7. API: UPLOAD
+# 8. API: UPLOAD
 # -------------------------------------------------
 @app.route('/api/upload', methods=['POST'])
 @login_required
@@ -135,17 +143,15 @@ def upload():
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     image.save(filepath)
 
-    # NOTE: we store the *public* URL so Vercel can serve it directly
     image_url = f"/public/projects/{filename}"
 
-    # Load existing data
     data = {"facilities": [], "digital": []}
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, 'r') as f:
                 data = json.load(f)
         except Exception:
-            pass   # corrupted → start fresh
+            pass
 
     entry = {
         "id": str(uuid.uuid4()),
@@ -169,12 +175,60 @@ def upload():
     except Exception:
         return jsonify({"error": "Save failed"}), 500
 
-    return jsonify({"success": True, "title": title})
+    return jsonify({
+        "success": True,
+        "title": title,
+        "id": entry["id"]  # ← Optional but helpful
+    })
 
 
 # -------------------------------------------------
-# RUN SERVER (for local dev)
+# 9. API: DELETE PROJECT
+# -------------------------------------------------
+@app.route('/api/delete/<project_id>', methods=['DELETE'])
+@login_required
+def delete_project(project_id):
+    if not os.path.exists(DATA_FILE):
+        return jsonify({"error": "No data"}), 404
+
+    try:
+        with open(DATA_FILE, 'r') as f:
+            data = json.load(f)
+    except:
+        return jsonify({"error": "Failed to read data"}), 500
+
+    deleted = False
+    image_to_remove = None
+
+    for service in ['facilities', 'digital']:
+        for i, proj in enumerate(data.get(service, [])):
+            if proj.get('id') == project_id:
+                image_to_remove = proj.get('image', '').replace('/public/projects/', '')
+                data[service].pop(i)
+                deleted = True
+                break
+        if deleted:
+            break
+
+    if not deleted:
+        return jsonify({"error": "Project not found"}), 404
+
+    try:
+        with open(DATA_FILE, 'w') as f:
+            json.dump(data, f, indent=2)
+    except:
+        return jsonify({"error": "Failed to save"}), 500
+
+    if image_to_remove:
+        img_path = os.path.join(UPLOAD_FOLDER, image_to_remove)
+        if os.path.exists(img_path):
+            os.remove(img_path)
+
+    return jsonify({"success": True})
+
+
+# -------------------------------------------------
+# RUN SERVER
 # -------------------------------------------------
 if __name__ == '__main__':
-    # 0.0.0.0 lets you access from phone on same Wi-Fi
     app.run(host='0.0.0.0', port=5000, debug=True)

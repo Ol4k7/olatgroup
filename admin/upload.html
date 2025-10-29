@@ -6,19 +6,16 @@
   <title>Admin Upload | Olat Group</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root { --primary: #0066ff; }
+    :root { --primary: #0066ff; --danger: #ef4444; --success: #10b981; }
     * { margin:0; padding:0; box-sizing:border-box; }
     body { 
       font-family: 'Inter', sans-serif; 
       background: #f4f7fa; 
       padding: 2rem; 
-      display: flex; 
-      align-items: center; 
       min-height: 100vh;
     }
     .container { 
-      max-width: 600px; 
-      width: 100%; 
+      max-width: 800px; 
       margin: 0 auto; 
       background: white; 
       padding: 2.5rem; 
@@ -29,10 +26,26 @@
       font-family: 'Sora', sans-serif;
       color: var(--primary); 
       margin-bottom: 1.5rem; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      font-size: 1.6rem;
+      font-size: 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logout { 
+      font-size: 0.9rem; 
+      color: var(--primary); 
+      text-decoration: none; 
+      font-weight: 500;
+    }
+    .logout:hover { text-decoration: underline; }
+
+    /* Upload Form */
+    .upload-form {
+      background: #f9fbfd;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      border: 1px solid #e2e8f0;
     }
     input, textarea, select, button { 
       width: 100%; 
@@ -57,52 +70,109 @@
       transition: background 0.3s;
     }
     button:hover { background: #0052cc; }
-    .success { color: #10b981; margin-top: 1rem; font-weight: 500; }
-    .error { color: #ef4444; margin-top: 1rem; font-weight: 500; }
-    .logout { 
-      font-size: 0.9rem; 
-      color: var(--primary); 
-      text-decoration: none; 
+
+    /* Projects List */
+    .projects-list {
+      margin-top: 2rem;
+    }
+    .project-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      background: #fdfdfe;
+      transition: all 0.2s;
+    }
+    .project-item:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .project-thumb {
+      width: 80px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 1rem;
+    }
+    .project-info {
+      flex: 1;
+    }
+    .project-title {
+      font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;
+    }
+    .project-meta {
+      font-size: 0.875rem; color: #64748b;
+    }
+    .delete-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .delete-btn:hover { background: #dc2626; }
+
+    .status {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
       font-weight: 500;
     }
-    .logout:hover { text-decoration: underline; }
+    .success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
+    .error { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+
+    @media (max-width: 640px) {
+      .project-item { flex-direction: column; text-align: center; }
+      .project-thumb { margin: 0 0 0.75rem 0; }
+      .delete-btn { margin-top: 0.75rem; width: 100%; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>
       Upload Project
-      <a href="/admin/login.html" class="logout">Logout</a>
+      <a href="/admin/logout" class="logout">Logout</a>
     </h2>
 
-    <form id="uploadForm">
-      <input type="text" name="title" placeholder="Project Title" required />
-      <textarea name="description" placeholder="Description" rows="3"></textarea>
-      <input type="url" name="url" placeholder="Live URL (Web only)" />
+    <!-- Upload Form -->
+    <div class="upload-form">
+      <form id="uploadForm">
+        <input type="text" name="title" placeholder="Project Title" required />
+        <textarea name="description" placeholder="Description" rows="3"></textarea>
+        <input type="url" name="url" placeholder="Live URL (Web only)" />
 
-      <select name="service" id="service" required>
-        <option value="">Select Service</option>
-        <option value="facilities">Facilities Management</option>
-        <option value="digital">Digital Solutions</option>
-      </select>
+        <select name="service" id="service" required>
+          <option value="">Select Service</option>
+          <option value="facilities">Facilities Management</option>
+          <option value="digital">Digital Solutions</option>
+        </select>
 
-      <select name="type" id="type" style="display:none;">
-        <option value="web">Web Design</option>
-        <option value="graphics">Graphics Design</option>
-      </select>
+        <select name="type" id="type" style="display:none;">
+          <option value="web">Web Design</option>
+          <option value="graphics">Graphics Design</option>
+        </select>
 
-      <select name="category" id="category" style="display:none;">
-        <option value="Logos">Logos</option>
-        <option value="Banners">Banners</option>
-        <option value="Social Media">Social Media</option>
-        <option value="Brochures">Brochures</option>
-      </select>
+        <select name="category" id="category" style="display:none;">
+          <option value="Logos">Logos</option>
+          <option value="Banners">Banners</option>
+          <option value="Social Media">Social Media</option>
+          <option value="Brochures">Brochures</option>
+        </select>
 
-      <input type="file" name="image" accept="image/*" required />
-      <button type="submit">Upload Project</button>
-    </form>
+        <input type="file" name="image" accept="image/*" required />
+        <button type="submit">Upload Project</button>
+      </form>
+      <p id="status" class="status"></p>
+    </div>
 
-    <p id="status"></p>
+    <!-- Projects List -->
+    <div class="projects-list">
+      <h3>Uploaded Projects</h3>
+      <div id="projectsContainer">
+        <p>Loading projects...</p>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -111,8 +181,9 @@
     const service = document.getElementById('service');
     const type = document.getElementById('type');
     const category = document.getElementById('category');
+    const projectsContainer = document.getElementById('projectsContainer');
 
-    // Toggle type & category based on service
+    // Toggle type & category
     service.onchange = () => {
       const isDigital = service.value === 'digital';
       type.style.display = isDigital ? 'block' : 'none';
@@ -125,40 +196,99 @@
       if (type.value !== 'graphics') category.value = '';
     };
 
-    // Handle form submission
+    // Load all projects
+    async function loadProjects() {
+      projectsContainer.innerHTML = '<p>Loading...</p>';
+      try {
+        const [facRes, digRes] = await Promise.all([
+          fetch('/api/projects/facilities'),
+          fetch('/api/projects/digital')
+        ]);
+        const facilities = await facRes.json();
+        const digital = await digRes.json();
+        const all = [...facilities, ...digital].sort((a,b) => b.timestamp.localeCompare(a.timestamp));
+
+        if (all.length === 0) {
+          projectsContainer.innerHTML = '<p>No projects uploaded yet.</p>';
+          return;
+        }
+
+        projectsContainer.innerHTML = all.map(p => `
+          <div class="project-item">
+            <img src="${p.image}" alt="${p.title}" class="project-thumb" 
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div style="display:none; width:80px; height:60px; background:#e2e8f0; border-radius:6px; margin-right:1rem;"></div>
+            <div class="project-info">
+              <div class="project-title">${p.title}</div>
+              <div class="project-meta">
+                ${p.service || 'Unknown'} • 
+                ${p.type ? p.type : 'Facility'} • 
+                ${new Date(p.timestamp).toLocaleDateString()}
+              </div>
+            </div>
+            <button class="delete-btn" data-id="${p.id}">Delete</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        projectsContainer.innerHTML = '<p class="error">Failed to load projects.</p>';
+      }
+    }
+
+    // Upload handler
     form.onsubmit = async (e) => {
       e.preventDefault();
       status.textContent = 'Uploading...';
       status.className = '';
 
       const formData = new FormData(form);
-      const serviceValue = service.value;
-
-      // Append service to URL
-      const url = `/api/upload?service=${serviceValue}`;
-
       try {
-        const res = await fetch(url, {
+        const res = await fetch('/api/upload', {
           method: 'POST',
           body: formData
         });
-
         const data = await res.json();
 
-        if (res.ok && data.success) {
+        if (data.success) {
           status.innerHTML = `<span class="success">Uploaded: "${data.title}"</span>`;
           form.reset();
           service.value = '';
           type.style.display = 'none';
           category.style.display = 'none';
+          loadProjects();
         } else {
           status.innerHTML = `<span class="error">${data.error || 'Upload failed'}</span>`;
         }
       } catch (err) {
-        status.innerHTML = `<span class="error">Network error. Try again.</span>`;
-        console.error(err);
+        status.innerHTML = '<span class="error">Network error.</span>';
       }
     };
+
+    // Delete handler
+    projectsContainer.addEventListener('click', async (e) => {
+      if (!e.target.matches('.delete-btn')) return;
+      const id = e.target.dataset.id;
+      const item = e.target.closest('.project-item');
+
+      if (!confirm('Delete this project permanently?')) return;
+
+      try {
+        const res = await fetch(`/api/delete/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          item.remove();
+          if (projectsContainer.children.length === 0) {
+            projectsContainer.innerHTML = '<p>No projects uploaded yet.</p>';
+          }
+        } else {
+          alert(data.error || 'Delete failed');
+        }
+      } catch (err) {
+        alert('Network error');
+      }
+    });
+
+    // Initial load
+    loadProjects();
   </script>
 </body>
 </html>
