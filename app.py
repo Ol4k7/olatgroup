@@ -29,7 +29,7 @@ if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({"facilities": [], "digital": []}, f, indent=2)
 
-app = Flask(__name__, static_folder='..', static_url_path='')
+app = Flask(__name__, static_folder='static', static_url_path='/')
 app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'  # CHANGE IN PRODUCTION!
 
 
@@ -50,14 +50,15 @@ def login_required(f):
 # -------------------------------------------------
 @app.route('/')
 def index():
-    return send_from_directory('..', 'index.html')
+    return send_from_directory('static', 'index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
-    blocked = ['api/', 'projects/', 'admin/login', 'admin/upload']
+    blocked = ['api/', 'public/', 'admin/']
     if any(path.startswith(p) for p in blocked):
-        abort(404)
-    return send_from_directory('..', path)
+        # Let Flask handle API/admin routes
+        return app.full_dispatch_request()
+    return send_from_directory('static', path)
 
 
 # -------------------------------------------------
@@ -78,7 +79,7 @@ def admin_login():
             session['logged_in'] = True
             return redirect('/admin/upload')
         return "Invalid password", 403
-    return send_from_directory('..', 'admin/login.html')
+    return send_from_directory('static/admin', 'login.html')
 
 
 # -------------------------------------------------
@@ -96,7 +97,7 @@ def admin_logout():
 @app.route('/admin/upload')
 @login_required
 def admin_upload_page():
-    return send_from_directory('..', 'admin/upload.html')
+    return send_from_directory('static/admin', 'upload.html')
 
 
 # -------------------------------------------------
