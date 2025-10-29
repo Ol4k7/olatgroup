@@ -10,12 +10,13 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 
+
 # -------------------------------------------------
 # CONFIG
 # -------------------------------------------------
-project_root = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = '/tmp/public/projects'  # Vercel writable dir
-DATA_FILE = '/tmp/data/projects.json'
+project_root = os.path.dirname(os.path.abspath(__file__))  # ← FIXED
+UPLOAD_FOLDER = os.path.join(project_root, 'public', 'projects')
+DATA_FILE = os.path.join(project_root, 'data', 'projects.json')
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 ADMIN_PASSWORD = "olat2025"
 
@@ -26,7 +27,7 @@ if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({"facilities": [], "digital": []}, f, indent=2)
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+app = Flask(__name__, static_folder='static', static_url_path='/')
 app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'
 
 
@@ -47,18 +48,19 @@ def login_required(f):
 # -------------------------------------------------
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('static', 'index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
     blocked = ['api/', 'public/', 'admin/']
     if any(path.startswith(p) for p in blocked):
-        abort(404)
-    return send_from_directory('.', path)
+        # Let Flask handle API/admin routes
+        return app.full_dispatch_request()
+    return send_from_directory('static', path)
 
 
 # -------------------------------------------------
-# 2. PROJECT IMAGES (public path)
+# 2. PROJECT IMAGES
 # -------------------------------------------------
 @app.route('/public/projects/<filename>')
 def serve_project_image(filename):
@@ -75,7 +77,7 @@ def admin_login():
             session['logged_in'] = True
             return redirect('/admin/upload')
         return "Invalid password", 403
-    return send_from_directory('.', 'admin/login.html')
+    return send_from_directory('static/admin', 'login.html')
 
 
 # -------------------------------------------------
@@ -93,90 +95,100 @@ def admin_logout():
 @app.route('/admin/upload')
 @login_required
 def admin_upload_page():
-    return send_from_directory('.', 'admin/upload.html')
+    return send_from_directory('static/admin', 'upload.html')
 
 
 # -------------------------------------------------
-# 6. API: GET PROJECTS
+# 6. ADMIN: CHECK LOGIN
+# -------------------------------------------------
+@app.route('/admin/check')
+@login_required
+def admin_check():
+    return jsonify({"admin": True}), 200
+
+
+# -------------------------------------------------
+# 7. API: GET PROJECTS
 # -------------------------------------------------
 @app.route('/api/projects/<service>')
 def get_projects(service):
     if service not in ['facilities', 'digital']:
-        return jsonify([])
-    if not os.path.exists(DATA_FILE):
         return jsonify([])
     try:
         with open(DATA_FILE, 'r') as f:
             data = json.load(f)
         return jsonify(data.get(service, []))
     except Exception as e:
-        print(f"Error loading projects: {e}")
+        print(f"Error loading projects: {e}")  # Vercel log
         return jsonify([])
 
 
 # -------------------------------------------------
-# 7. API: UPLOAD
+# 8. API: UPLOAD
 # -------------------------------------------------
 @app.route('/api/upload', methods=['POST'])
 @login_required
 def upload():
-    title = request.form.get('title')
-    description = request.form.get('description', '')
-    service = request.form.get('service')
-    image = request.files.get('image')
-    url = request.form.get('url', '')
-    type_ = request.form.get('type', '')
-    category = request.form.get('category', '')
+    try:
+        title = request.form.get('title')
+        description = request.form.get('description', '')
+        service = request.form.get('service')
+        image = request.files.get('image')
+        url = request.form.get('url', '')
+        type_ = request.form.get('type', '')
+        category = request.form.get('category', '')
 
-    if not all([title, service, image]):
-        return jsonify({"error": "Missing fields"}), 400
+        if not all([title, service, image]):
+            return jsonify({"error": "Missing fields"}), 400
 
-    ext = image.filename.rsplit('.', 1)[1].lower() if '.' in image.filename else ''
-    if ext not in ALLOWED_EXT:
-        return jsonify({"error": "Invalid image type"}), 400
+        ext = image.filename.rsplit('.', 1)[1].lower() if '.' in image.filename else ''
+        if ext not in ALLOWED_EXT:
+            return jsonify({"error": "Invalid image type"}), 400
 
-    filename = f"{uuid.uuid4().hex}_{secure_filename(image.filename)}"
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    image.save(filepath)
+        filename = f"{uuid.uuid4().hex}_{secure_filename(image.filename)}"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        image.save(filepath)
 
-    image_url = f"/public/projects/{filename}"
+        image_url = f"/public/projects/{filename}"
 
-    data = {"facilities": [], "digital": []}
-    if os.path.exists(DATA_FILE):
+        data = {"facilities": [], "digital": []}
         try:
             with open(DATA_FILE, 'r') as f:
                 data = json.load(f)
         except Exception as e:
             print(f"JSON read error: {e}")
 
-    entry = {
-        "id": str(uuid.uuid4()),
-        "title": title,
-        "description": description,
-        "image": image_url,
-        "timestamp": datetime.utcnow().isoformat() + "Z"
-    }
-    if service == "digital":
-        entry["type"] = type_
-        if type_ == "web" and url:
-            entry["url"] = url
-        if type_ == "graphics" and category:
-            entry["category"] = category
+        entry = {
+            "id": str(uuid.uuid4()),
+            "title": title,
+            "description": description,
+            "image": image_url,
+            "timestamp": datetime.utcnow().isoformat() + "Z"
+        }
+        if service == "digital":
+            entry["type"] = type_
+            if type_ == "web" and url:
+                entry["url"] = url
+            if type_ == "graphics" and category:
+                entry["category"] = category
 
-    data[service].append(entry)
+        data[service].append(entry)
 
-    try:
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f, indent=2)
-    except Exception as e:
-        print(f"JSON save error: {e}")
-        return jsonify({"error": "Save failed"}), 500
 
-    return jsonify({"success": True, "title": title, "id": entry["id"]})
+        return jsonify({
+            "success": True,
+            "title": title,
+            "id": entry["id"]
+        })
+    except Exception as e:
+        print(f"Upload error: {e}")
+        return jsonify({"error": "Upload failed"}), 500
 
 
 # -------------------------------------------------
-# 8. API: DELETE PROJECT
+# 9. API: DELETE PROJECT
 # -------------------------------------------------
 @app.route('/api/delete/<project_id>', methods=['DELETE'])
 @login_required
