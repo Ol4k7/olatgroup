@@ -9,38 +9,29 @@ from flask import (
     abort, session, redirect, url_for
 )
 from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
-from dotenv import load_dotenv
 
-# -------------------------------------------------
-# LOAD ENVIRONMENT VARIABLES
-# -------------------------------------------------
-load_dotenv()
 
 # -------------------------------------------------
 # CONFIG
 # -------------------------------------------------
-project_root = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOAD_FOLDER = os.path.join(project_root, 'public', 'projects')
 DATA_FILE = os.path.join(project_root, 'data', 'projects.json')
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+ADMIN_PASSWORD = "olat2025"
 
-# 🔐 Use hashed password stored in environment variable
-ADMIN_PASSWORD_HASH = os.environ.get("ADMIN_PASSWORD_HASH")
-if not ADMIN_PASSWORD_HASH:
-    raise RuntimeError("❌ ADMIN_PASSWORD_HASH not set in environment variables!")
-
-# Secret key for Flask session
-app = Flask(__name__, static_folder='static', static_url_path='/')
-app.secret_key = os.environ.get("SECRET_KEY", "ChangeThisSecretKey!")
-
-# Ensure folders exist
+# Create dirs/files if missing (Vercel needs this)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
 
+# Init empty JSON if missing
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({"facilities": [], "digital": []}, f, indent=2)
+
+app = Flask(__name__, static_folder='static', static_url_path='/')
+app.secret_key = 'OlatGroup2025!x9#v2$k7@mPqRwT'  # CHANGE IN PRODUCTION!
+
 
 # -------------------------------------------------
 # LOGIN DECORATOR
@@ -65,6 +56,7 @@ def index():
 def serve_static(path):
     blocked = ['api/', 'public/', 'admin/']
     if any(path.startswith(p) for p in blocked):
+        # Let Flask handle API/admin routes
         return app.full_dispatch_request()
     return send_from_directory('static', path)
 
@@ -83,14 +75,10 @@ def serve_project_image(filename):
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        password = request.form.get('password', '')
-
-        # ✅ Verify password hash (instead of plain text)
-        if check_password_hash(ADMIN_PASSWORD_HASH, password):
+        if request.form.get('password') == ADMIN_PASSWORD:
             session['logged_in'] = True
             return redirect('/admin/upload')
         return "Invalid password", 403
-
     return send_from_directory('static/admin', 'login.html')
 
 
@@ -133,7 +121,7 @@ def get_projects(service):
             data = json.load(f)
         return jsonify(data.get(service, []))
     except Exception as e:
-        print(f"Error loading projects: {e}")
+        print(f"Error loading projects: {e}")  # Vercel log
         return jsonify([])
 
 
@@ -252,4 +240,4 @@ def delete_project(project_id):
 # RUN SERVER
 # -------------------------------------------------
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
