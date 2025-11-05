@@ -48,9 +48,9 @@
     <!-- CARD 1: Facilities -->
     <div class="flip-card" data-service="facilities">
       <div class="flip-inner">
-        <div class="flip-front"><h2>Facilities Management</h2></div>
+        <div class="flip-front"><h2>Facility Management</h2></div>
         <div class="flip-back">
-          <h2>Facilities Management</h2>
+          <h2>Facility Management</h2> 
           <p>We deliver <strong>world-class facility management</strong> that keeps your spaces clean, safe, and efficient — every single day.</p>
           <ul>
             <li>Daily & deep cleaning</li>
@@ -114,7 +114,7 @@
       content.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading projects...</div>`;
 
       try {
-        const res = await fetch(`/api/projects/${service}`);
+        const res = await fetch(`/api/projects.php?service=${service}`);
         if (!res.ok) throw new Error("Failed to fetch");
         const projects = await res.json();
 
