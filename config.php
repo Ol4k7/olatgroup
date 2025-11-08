@@ -1,6 +1,6 @@
 <?php
 // config.php
-define('ADMIN_PASSWORD_HASH','$2y$12$lwXkBdjUFAGM6n.m6fl1be/swivvMzYcoOxp5/5ixewGmKtCQ/uJ2'); // ← Generate below
+define('ADMIN_PASSWORD_HASH','$2y$12$lwXkBdjUFAGM6n.m6fl1be/swivvMzYcoOxp5/5ixewGmKtCQ/uJ2'); 
 define('DATA_FILE', __DIR__ . '/data/projects.json');
 define('UPLOAD_DIR', __DIR__ . '/public/projects');
 define('ALLOWED_EXT', ['png', 'jpg', 'jpeg', 'gif', 'webp']);

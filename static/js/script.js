@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const recipient = "tolulopetheophilus96@gmail.com";
+      const recipient = "info@olatgrouplimited.co.uk";
       const subject = encodeURIComponent(`New Message from ${name}`);
       const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
       const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
