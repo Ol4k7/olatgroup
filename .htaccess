@@ -4,8 +4,19 @@ RewriteRule ^data/ - [F]
 RewriteRule ^config\.php$ - [F]
 
 # Allow only needed
+
+DirectoryIndex index.html
+
 RewriteCond %{REQUEST_URI} !^/static/
 RewriteCond %{REQUEST_URI} !^/public/projects/
 RewriteCond %{REQUEST_URI} !^/admin/
 RewriteCond %{REQUEST_URI} !^/api/
-RewriteRule ^ - [F]
+RewriteRule ^ - [L]
+
+
+# Allow homepage in root
+RewriteCond %{REQUEST_URI} ^/$ [OR]
+RewriteCond %{REQUEST_URI} ^/index\.html$ [NC]
+RewriteRule ^ - [L]
+
+Options -Indexes
