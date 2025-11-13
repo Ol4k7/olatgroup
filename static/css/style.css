@@ -458,7 +458,7 @@ footer {
   transform: translateY(0);
 }
 
-/* === FLIP CARDS === */
+/* === FLIP CARDS (Optimized for Safari & Retina) === */
 .flip-container {
   display: flex;
   flex-wrap: wrap;
@@ -471,14 +471,26 @@ footer {
 }
 
 .flip-card {
+  position: relative;
   width: 100%;
   max-width: 420px;
   height: 570px;
-  position: relative;
   cursor: pointer;
   border-radius: 24px;
   overflow: hidden;
   background: transparent;
+
+  /* keep the blur outside rotation */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  /* improve rendering on MacBook/Safari */
+  -webkit-transform: translateZ(0);
+  will-change: transform, box-shadow;
+
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1),
+            box-shadow 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+
 }
 
 .flip-inner {
@@ -486,54 +498,49 @@ footer {
   width: 100%;
   height: 100%;
   text-align: center;
-  transition: transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 1.3s cubic-bezier(0.22, 1, 0.36, 1);
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .flip-card.flipped .flip-inner {
   transform: rotateY(180deg);
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* FRONT + BACK FACES */
 .flip-front,
 .flip-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden;
   border-radius: 24px;
   padding: 2.8rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 16px 45px rgba(13,44,90,0.12);
+  box-shadow: 0 16px 45px rgba(13, 44, 90, 0.12);
   border: 1px solid rgba(0, 102, 255, 0.1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.flip-front::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--card-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 24px;
-  z-index: -1;
-  pointer-events: none;
-  transform: translateZ(0);
-}
-
+/* FRONT FACE */
 .flip-front {
-  background: transparent;
+  background: var(--card-bg);
   transition: var(--transition);
 }
 
+/* BACK FACE */
 .flip-back {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: white;
+  color: #fff;
   transform: rotateY(180deg);
 }
 
+/* TEXT STYLES */
 .flip-front h2,
 .flip-back h2 {
   font-size: 2rem;
@@ -553,11 +560,12 @@ footer {
   margin: 1.2rem 0;
 }
 
+/* BACK BUTTON */
 .back-flip {
   margin-top: 1.8rem;
-  background: rgba(255,255,255,0.28);
-  color: white;
-  border: 1.8px solid rgba(255,255,255,0.45);
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+  border: 1.8px solid rgba(255, 255, 255, 0.45);
   padding: 0.9rem 2rem;
   border-radius: 50px;
   font-weight: 600;
@@ -567,19 +575,18 @@ footer {
 }
 
 .back-flip:hover {
-  background: white;
+  background: #fff;
   color: var(--primary);
   transform: translateY(-3px);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
 }
 
-.flip-card:hover .flip-front::before {
+/* HOVER EFFECTS */
+.flip-card:hover {
+  transform: translateY(-10px);
   box-shadow: 0 24px 60px var(--shadow);
 }
 
-.flip-card:hover .flip-front {
-  transform: translateY(-10px);
-}
 
 /* === ANIMATIONS === */
 @keyframes fadeUp {

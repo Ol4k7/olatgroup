@@ -79,6 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
     backBtn?.addEventListener('click', e => {
       e.stopPropagation();
       card.classList.remove('flipped');
+
+      void card.offsetWidth;
+
+      card.querySelector('.flip-inner').style.transform = '';
     });
   });
 
