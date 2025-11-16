@@ -5,7 +5,7 @@ RewriteRule ^config\.php$ - [F]
 
 # Allow only needed
 
-DirectoryIndex index.html
+DirectoryIndex index.php
 
 RewriteCond %{REQUEST_URI} !^/static/
 RewriteCond %{REQUEST_URI} !^/public/projects/
