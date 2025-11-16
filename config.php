@@ -11,6 +11,6 @@ define('ALLOWED_EXT', ['png', 'jpg', 'jpeg', 'gif', 'webp']);
 
 // Init JSON
 if (!file_exists(DATA_FILE)) {
-    file_put_contents(DATA_FILE, json_encode(["facilities" => [], "digital" => []], JSON_PRETTY_PRINT));
+    file_put_contents(DATA_FILE, json_encode(["facilities" => [], "digital" => [], "gallery" => []], JSON_PRETTY_PRINT));
 }
 ?>

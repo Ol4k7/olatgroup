@@ -1,49 +1,142 @@
 <?php
+
+ini_set('upload_max_filesize', '10M');   // max 10 MB per file
+ini_set('post_max_size', '12M');         // max 12 MB POST
+ini_set('memory_limit', '128M');         // optional, ensure enough memory
+ini_set('max_execution_time', '300');    // optional, for slow uploads
+ini_set('max_input_time', '300');        // optional
+
 session_start();
 require_once '../../config.php';
-if (!$_SESSION['admin']) { header('Location: login.php'); exit; }
 
-// Handle upload
-if ($_POST['title'] ?? '') {
-    $title = $_POST['title'];
-    $desc = $_POST['description'] ?? '';
-    $service = $_POST['service'];
-    $url = $_POST['url'] ?? '';
-    $type = $_POST['type'] ?? '';
+if (!$_SESSION['admin']) {
+    header('Location: login.php');
+    exit;
+}
+
+// --- Constants ---
+if (!defined('ALLOWED_EXT')) define('ALLOWED_EXT', ['jpg','jpeg','png','gif','webp']);
+if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', __DIR__ . '/../../public/projects');
+if (!defined('DATA_FILE')) define('DATA_FILE', __DIR__ . '/../../data/projects.json');
+
+// Ensure upload directory exists
+if (!is_dir(UPLOAD_DIR)) {
+    if (!mkdir(UPLOAD_DIR, 0755, true)) {
+        die('Failed to create upload directory');
+    }
+}
+
+$status = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // --- Fetch inputs ---
+    $title    = trim($_POST['title'] ?? '');
+    $desc     = trim($_POST['description'] ?? '');
+    $service  = $_POST['service'] ?? '';
+    $url      = trim($_POST['url'] ?? '');
+    $type     = $_POST['type'] ?? '';
     $category = $_POST['category'] ?? '';
-    $image = $_FILES['image'] ?? null;
+    $image    = $_FILES['image'] ?? null;
 
-    if (!$title || !$service || !$image || $image['error'] !== 0) {
-        $status = ['error' => 'Missing fields or image'];
-    } else {
-        $ext = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
-        if (!in_array($ext, ALLOWED_EXT)) {
-            $status = ['error' => 'Invalid image type'];
+    $allowed_services = ['facilities', 'digital', 'gallery'];
+
+    // --- 1. Validate basic fields ---
+    if ($title === '') {
+        $status = ['error' => 'Project title is required'];
+    } elseif (!in_array($service, $allowed_services)) {
+        $status = ['error' => 'Invalid service selected'];
+    }
+
+    // --- 2. Validate image ---
+    if (!$status) {
+        if (!$image || $image['error'] === UPLOAD_ERR_NO_FILE) {
+            $status = ['error' => 'An image is required'];
+        } elseif ($image['error'] !== UPLOAD_ERR_OK) {
+            // Handle all PHP upload errors
+            $php_errors = [
+                1 => 'The uploaded file exceeds the upload_max_filesize directive.',
+                2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive in the HTML form.',
+                3 => 'The uploaded file was only partially uploaded.',
+                4 => 'No file was uploaded.',
+                6 => 'Missing a temporary folder.',
+                7 => 'Failed to write file to disk.',
+                8 => 'A PHP extension stopped the file upload.'
+            ];
+            $msg = $php_errors[$image['error']] ?? 'Unknown upload error';
+            $status = ['error' => "File upload error: $msg"];
         } else {
-            $filename = uniqid() . "_$ext";
-            $filepath = UPLOAD_DIR . "/$filename";
-            if (move_uploaded_file($image['tmp_name'], $filepath)) {
-                $data = json_decode(file_get_contents(DATA_FILE), true);
-                $entry = [
-                    'id' => uniqid(),
-                    'title' => $title,
-                    'description' => $desc,
-                    'image' => "/public/projects/$filename",
-                    'timestamp' => date('c')
-                ];
-                if ($service === 'digital') {
-                    $entry['type'] = $type;
-                    if ($type === 'web' && $url) $entry['url'] = $url;
-                    if ($type === 'graphics' && $category) $entry['category'] = $category;
-                }
-                $data[$service][] = $entry;
-                file_put_contents(DATA_FILE, json_encode($data, JSON_PRETTY_PRINT));
-                $status = ['success' => true, 'title' => $title, 'id' => $entry['id']];
-            } else {
-                $status = ['error' => 'Upload failed'];
+            // Check file extension
+            $ext = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, ALLOWED_EXT)) {
+                $status = ['error' => 'Invalid image type. Allowed: ' . implode(', ', ALLOWED_EXT)];
+            }
+            // Optional: file size limit (10MB)
+            elseif ($image['size'] > 10 * 1024 * 1024) {
+                $status = ['error' => 'File too large. Max 10MB allowed'];
             }
         }
     }
+
+    // --- 3. Service-specific validation ---
+    if (!$status && $service === 'digital') {
+        if (!$type) {
+            $status = ['error' => 'Select project type (Web or Graphics)'];
+        } elseif ($type === 'web' && $url === '') {
+            $status = ['error' => 'Web Design requires a live URL'];
+        } elseif ($type === 'graphics' && $category === '') {
+            $status = ['error' => 'Graphics Design requires a category'];
+        }
+    }
+
+    // --- 4. Process upload if no errors ---
+    if (!$status) {
+        $filename = uniqid('proj_') . '.' . $ext;
+        $filepath = UPLOAD_DIR . "/$filename";
+
+        if (!move_uploaded_file($image['tmp_name'], $filepath)) {
+            $status = ['error' => 'Upload failed. Check directory permissions'];
+        } else {
+            // Load JSON data
+            $data = file_exists(DATA_FILE) ? json_decode(file_get_contents(DATA_FILE), true) : [];
+
+            // Initialize service array if missing
+            if (!isset($data[$service])) $data[$service] = [];
+
+            // Create entry
+            $entry = [
+                'id'          => uniqid(),
+                'title'       => $title,
+                'description' => $desc,
+                'service'     => $service,
+                'image'       => "/public/projects/$filename",
+                'timestamp'   => date('c')
+            ];
+
+            // Digital-specific fields
+            if ($service === 'digital') {
+                $entry['type'] = $type;
+                if ($type === 'web') $entry['url'] = $url;
+                if ($type === 'graphics') $entry['category'] = $category;
+            }
+
+            // Append and save
+            $data[$service][] = $entry;
+
+            if (file_put_contents(DATA_FILE, json_encode($data, JSON_PRETTY_PRINT))) {
+                $status = ['success' => true, 'title' => $title, 'id' => $entry['id']];
+            } else {
+                $status = ['error' => 'Failed to save project data'];
+            }
+        }
+    }
+}
+
+// --- 5. Handle logout ---
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: login.php');
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -92,6 +185,7 @@ if ($_POST['title'] ?? '') {
           <option value="">Select Service</option>
           <option value="facilities">Facilities</option>
           <option value="digital">Digital</option>
+          <option value="gallery">Gallery</option>
         </select>
         <select name="type" style="display:none;">
           <option value="web">Web Design</option>
@@ -107,9 +201,10 @@ if ($_POST['title'] ?? '') {
         <button type="submit">Upload</button>
       </form>
       <?php if ($status ?? ''): ?>
-        <p class="status <?= $status['success'] ?? false ? 'success' : 'error' ?>">
-          <?= $status['success'] ? "Uploaded: \"{$status['title']}\"" : $status['error'] ?>
+        <p class="status <?= (!empty($status['success'])) ? 'success' : 'error' ?>">
+            <?= !empty($status['success']) ? "Uploaded: \"{$status['title']}\"" : $status['error'] ?>
         </p>
+
       <?php endif; ?>
     </div>
 
@@ -123,14 +218,22 @@ if ($_POST['title'] ?? '') {
     const service = document.querySelector('[name="service"]');
     const type = document.querySelector('[name="type"]');
     const category = document.querySelector('[name="category"]');
+    const urlInput = document.querySelector('[name="url"]');
+    const descInput = document.querySelector('[name="description"]');
 
     service.onchange = () => {
       const isDigital = service.value === 'digital';
+      const isGallery = service.value === 'gallery';
       type.style.display = isDigital ? 'block' : 'none';
       category.style.display = 'none';
+      urlInput.style.display = isDigital ? 'block' : 'none';
+      descInput.style.display = isGallery ? 'none' : 'block';
     };
     type.onchange = () => {
-      category.style.display = type.value === 'graphics' ? 'block' : 'none';
+      const isGraphics = type.value === 'graphics';
+      const isWeb = type.value === 'web';
+      category.style.display = isGraphics ? 'block' : 'none';
+      urlInput.style.display = isWeb ? 'block' : 'none';
     };
 
     async function loadProjects() {
@@ -138,7 +241,9 @@ if ($_POST['title'] ?? '') {
       const fac = await res.json();
       const res2 = await fetch('/api/projects.php?service=digital');
       const dig = await res2.json();
-      const all = [...fac, ...dig].sort((a,b) => b.timestamp.localeCompare(a.timestamp));
+      const res3 = await fetch('/api/projects.php?service=gallery');
+      const gal = await res3.json();
+      const all = [...fac, ...dig, ...gal].sort((a,b) => b.timestamp.localeCompare(a.timestamp));
       document.getElementById('projects').innerHTML = all.map(p => `
         <div class="project-item">
           <img src="${p.image}" class="project-thumb" onerror="this.style.display='none'">

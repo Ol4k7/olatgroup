@@ -17,15 +17,23 @@
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    p,h2{
+      color: white;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+  </style>
 </head>
 <body>
 
   <!-- HEADER -->
   <header>
-    <div class="logo">
-      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDUiIGhlaWdodD0iNDUiIHZpZXdCb3g9IjAgMCA0NSAieG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMi41IiBjeT0iMjIuNSIgcj0iMjAiIGZpbGw9IiMwMDc4ZmYiLz48dGV4dCB4PSIyMi41IiB5PSIyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSI+TyI8L3RleHQ+PC9zdmc+" alt="Olat Group Logo">
-      <h1>Olat Group <span>Limited</span></h1>
-    </div>
+    <a href="/" class="logo">
+      <img src="weblogo.jpg" alt="Olat Group Logo">
+      <!-- <h1>Olat Group <span>Limited</span></h1> -->
+    </a>
     <button class="menu-toggle" id="menuToggle">&#9776;</button>
     <nav>
       <ul id="navList">
@@ -103,7 +111,6 @@
     &copy; <span id="year"></span> Olat Group | All Rights Reserved
   </footer>
 
-  <!-- PYTHON API SCRIPT (NO FIREBASE) -->
   <script>
     // Set current year
     document.getElementById("year").textContent = new Date().getFullYear();
@@ -154,7 +161,7 @@
 
       const tabs = `
         <div class="portfolio-tabs">
-          <button class="tab-btn active" data-tab="web">Web Design</button>
+          <button class="tab-btn active" data-tab="web">Web Design (tap to view site)</button>
           <button class="tab-btn" data-tab="graphics">Graphics Design</button>
         </div>
         <div id="tabContent"></div>

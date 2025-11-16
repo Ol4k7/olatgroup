@@ -71,14 +71,18 @@ header.shrink {
   display: flex;
   align-items: center;
   gap: 12px;
+  text-decoration: none;
+  transition: all 0.35s ease;
+
 }
 
 .logo img {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 200px;
+  height: 90px;
+  border-radius: 16px;
   border: 2px solid var(--primary);
   box-shadow: 0 4px 12px var(--shadow);
+  object-fit: cover;
 }
 
 .logo h1 {
@@ -87,6 +91,15 @@ header.shrink {
   font-size: 1.25rem;
   color: var(--text);
 }
+
+.logo:hover {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 102, 255, 0.18);
+}
+
 
 .logo span {
   color: var(--text);
@@ -133,6 +146,7 @@ nav ul li a.active::after {
 /* === MENU TOGGLE === */
 .menu-toggle {
   display: none;
+  align-items: center;
   font-size: 1.8rem;
   background: none;
   border: none;
@@ -168,7 +182,7 @@ nav ul li a.active::after {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
 }
 
 .hero-content p {
@@ -185,7 +199,7 @@ nav ul li a.active::after {
 .hero-image {
   width: 260px;
   height: 260px;
-  border-radius: 50%;
+  border-radius:50px;
   overflow: hidden;
   border: 5px solid var(--primary);
   box-shadow: 0 12px 30px var(--shadow);
@@ -194,7 +208,7 @@ nav ul li a.active::after {
 }
 
 .hero-image:hover {
-  transform: scale(1.05) rotate(3deg);
+  transform: scale(1.05) rotate(1deg);
 }
 
 .hero-image img {
@@ -474,7 +488,7 @@ footer {
   position: relative;
   width: 100%;
   max-width: 420px;
-  height: 570px;
+  height: 600px;
   cursor: pointer;
   border-radius: 24px;
   overflow: hidden;
@@ -485,6 +499,7 @@ footer {
   -webkit-backdrop-filter: blur(14px);
 
   /* improve rendering on MacBook/Safari */
+  transform: translateZ(0);
   -webkit-transform: translateZ(0);
   will-change: transform, box-shadow;
 
@@ -543,7 +558,8 @@ footer {
 /* TEXT STYLES */
 .flip-front h2,
 .flip-back h2 {
-  font-size: 2rem;
+  color: var(--text);
+  font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 1.2rem;
 }
@@ -602,7 +618,13 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .menu-toggle { display: block; }
+  .menu-toggle { 
+    display: block;
+    position: absolute;
+    right: 10%;
+     
+
+  }
   nav ul {
     display: none;
     flex-direction: column;
@@ -622,7 +644,7 @@ footer {
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .hero { padding: 8rem 1.5rem 2.5rem; text-align: center; }
+  .hero { padding: 9rem 1.5rem 2.5rem; text-align: center; }
   .hero-content h2 { font-size: 2rem; }
   .hero-image { width: 180px; height: 180px; }
 
@@ -631,11 +653,12 @@ footer {
 }
 
 @media (max-width: 480px) {
-  .hero { padding: 7rem 1rem 2rem; }
+  .hero { display:flex; align-items: center; justify-content: center; text-align: center; padding: 9rem 0.2rem 1rem; width: 100%; margin-top: 1.5rem; }
   .hero-content h2 { font-size: 1.8rem; }
-  .hero-image { width: 150px; height: 150px; border: 4px solid var(--primary); }
+  .hero-image { width: 190px; height: 190px; border: 4px solid var(--primary); }
+  .btn.dark{display: inline-flex; align-items: center; justify-content: center; padding: 12px 28px;}
 
-  .flip-card { height: 520px; }
+  .flip-card { height: 480px; }
   .flip-front h2, .flip-back h2 { font-size: 1.55rem; }
   .flip-back { padding: 2rem; }
 }
