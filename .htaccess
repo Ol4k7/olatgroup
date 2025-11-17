@@ -9,11 +9,11 @@ RewriteRule ^data/ - [F,L]
 
 
 # --- 3. Protect API folder ---
-RewriteRule ^api/ - [F,L]
+# RewriteRule ^api/ - [F,L]
 
 # --- 4. Prevent directory browsing for uploads ---
-RewriteCond %{REQUEST_URI} ^/public/projects/
-RewriteRule ^.*$ - [R=403,L]
+# RewriteCond %{REQUEST_URI} ^/public/projects/
+# RewriteRule ^.*$ - [R=403,L]
 
 # --- 5. Default file for root ---
 DirectoryIndex index.php
