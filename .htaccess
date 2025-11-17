@@ -1,12 +1,20 @@
 # --- Enable Rewrite Engine ---
 RewriteEngine On
 
+# --- Cache Buster (global for all CSS & JS) ---
+SetEnv CACHEBUST_VER "20251120-001"
+
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_URI} \.(css|js)$ [NC]
+    RewriteRule ^(.+)$ $1?v=%{ENV:CACHEBUST_VER} [QSA,L]
+</IfModule>
+
 # --- 1. Block direct access to sensitive files ---
 RewriteRule ^config\.php$ - [F,L]
 RewriteRule ^data/ - [F,L]
 
 # --- 2. Protect admin area ---
-
+# (Untouched)
 
 # --- 3. Protect API folder ---
 # RewriteRule ^api/ - [F,L]

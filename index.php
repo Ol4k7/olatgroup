@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Olat Group | Innovating Spaces & Technology</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=1.0.0">
+  <link rel="stylesheet" href="/static/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -167,7 +167,7 @@
   <footer>
     &copy; 2025 Olat Group | All Rights Reserved
   </footer>
-  <script src="/static/js/script.js?v=1.0.0"></script>
+  <script src="/static/js/script.js"></script>
 
   <!-- JavaScript for Tap to Expand Modal -->
   <script>
