@@ -102,8 +102,11 @@ header.shrink {
 
 
 .logo span {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
   color: var(--text);
-  font-weight: 600;
+  padding-top: 1rem;
 }
 
 /* === NAVIGATION === */
