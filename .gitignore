@@ -5,3 +5,4 @@ __pycache__/
 instance/
 public/projects/
 data/projects.json
+config.php

@@ -16,7 +16,7 @@ RewriteRule ^ - [L]
 
 # Allow homepage in root
 RewriteCond %{REQUEST_URI} ^/$ [OR]
-RewriteCond %{REQUEST_URI} ^/index\.html$ [NC]
+RewriteCond %{REQUEST_URI} ^/index\.php$[NC]
 RewriteRule ^ - [L]
 
 Options -Indexes
