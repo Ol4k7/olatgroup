@@ -48,6 +48,7 @@ header {
   position: fixed;
   top: 0;
   width: 100%;
+  height: auto;
   background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -79,9 +80,7 @@ header.shrink {
 .logo img {
   width: 200px;
   height: 90px;
-  border-radius: 16px;
-  border: 2px solid var(--primary);
-  box-shadow: 0 4px 12px var(--shadow);
+  background: none;
   object-fit: cover;
 }
 

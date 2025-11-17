@@ -1,15 +1,36 @@
 <?php
+// ===== SESSION SECURITY =====
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1);      // requires https
+ini_set('session.use_strict_mode', 1);
 session_start();
+
 require_once '../../config.php';
 
 $error = '';
 
-if ($_POST['password'] ?? '') {
+// ===== RATE LIMITING =====
+if (!isset($_SESSION['attempts'])) {
+    $_SESSION['attempts'] = 0;
+}
+
+if ($_SESSION['attempts'] >= 5) {
+    $error = "Too many attempts. Try again later.";
+} else if ($_POST['password'] ?? '') {
+
     if (password_verify($_POST['password'], ADMIN_PASSWORD_HASH)) {
+
+        // Regenerate session to prevent fixation
+        session_regenerate_id(true);
+
         $_SESSION['admin'] = true;
+        $_SESSION['attempts'] = 0; // reset attempts
+
         header('Location: upload.php');
         exit;
+
     } else {
+        $_SESSION['attempts']++;
         $error = "Incorrect password.";
     }
 }

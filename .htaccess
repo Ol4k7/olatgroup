@@ -1,22 +1,22 @@
-# Block direct access
+# --- Enable Rewrite Engine ---
 RewriteEngine On
-RewriteRule ^data/ - [F]
-RewriteRule ^config\.php$ - [F]
 
-# Allow only needed
+# --- 1. Block direct access to sensitive files ---
+RewriteRule ^config\.php$ - [F,L]
+RewriteRule ^data/ - [F,L]
 
+# --- 2. Protect admin area ---
+
+
+# --- 3. Protect API folder ---
+RewriteRule ^api/ - [F,L]
+
+# --- 4. Prevent directory browsing for uploads ---
+RewriteCond %{REQUEST_URI} ^/public/projects/
+RewriteRule ^.*$ - [R=403,L]
+
+# --- 5. Default file for root ---
 DirectoryIndex index.php
 
-RewriteCond %{REQUEST_URI} !^/static/
-RewriteCond %{REQUEST_URI} !^/public/projects/
-RewriteCond %{REQUEST_URI} !^/admin/
-RewriteCond %{REQUEST_URI} !^/api/
-RewriteRule ^ - [L]
-
-
-# Allow homepage in root
-RewriteCond %{REQUEST_URI} ^/$ [OR]
-RewriteCond %{REQUEST_URI} ^/index\.php$[NC]
-RewriteRule ^ - [L]
-
+# --- 6. Extra: disable directory browsing globally ---
 Options -Indexes

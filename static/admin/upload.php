@@ -9,7 +9,7 @@ ini_set('max_input_time', '300');        // optional
 session_start();
 require_once '../../config.php';
 
-if (!$_SESSION['admin']) {
+if (!($_SESSION['admin'] ?? false)) {
     header('Location: login.php');
     exit;
 }

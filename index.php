@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+  <link rel="manifest" href="/favicon_io/site.webmanifest">
   <link rel="icon" href="/favicon_io/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/favicon_io/favicon.ico" type="image/x-icon">
 
@@ -98,7 +98,7 @@
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="/static/weblogo.jpg" alt="Olat Group Logo">
+      <img src="/static/weblogo.png" alt="Olat Group Logo">
       <!-- <h1>Olat Group <span>Limited</span></h1> -->
     </a>
     <button class="menu-toggle" id="menuToggle">&#9776;</button>
@@ -116,7 +116,7 @@
     <div class="hero-content">
       <h2>We Build Your Digital Presence and Maintain Your Physical Space.</h2>
       <div class="hero-buttons">
-        <a href="/static/services.html#digital" class="btn dark">OUR EXPERTISE </a>
+        <a href="/static/services.html#digital" class="btn dark">OUR EXPERTISE</a>
       </div>
     </div>
     <div class="hero-image">
