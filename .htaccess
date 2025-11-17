@@ -48,3 +48,7 @@ DirectoryIndex index.php
 
 # --- 9. Extra: disable directory browsing globally ---
 Options -Indexes
+
+<IfModule mod_substitute.c>
+    Header set X-Substitute-Test "enabled"
+</IfModule>
