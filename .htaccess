@@ -2,7 +2,7 @@
 RewriteEngine On
 
 # --- Cache Buster Version ---
-SetEnv CACHEBUST_VER "20251120-001"
+SetEnv CACHEBUST_VER "20251120-002"
 
 # --- 1. Rewrite URLs for CSS & JS requests (fallback) ---
 <IfModule mod_rewrite.c>
