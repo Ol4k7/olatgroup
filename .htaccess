@@ -14,6 +14,9 @@ SetEnv CACHEBUST_VER "20251120-003"
 <IfModule mod_substitute.c>
     AddOutputFilterByType SUBSTITUTE text/html
     Substitute "s#(href|src)\s*=\s*([\"'])(?!https?:|//|data:|mailto:)([^\"']+\.(?:css|js))(?:\?[^\"']*)?([\"'])#$1=$2$3?v=${CACHEBUST_VER}$4#i"
+
+    # Optional: test if mod_substitute is active
+    Header set X-Substitute-Test "enabled"
 </IfModule>
 
 # --- 3. Set long cache for static assets ---
@@ -48,7 +51,3 @@ DirectoryIndex index.php
 
 # --- 9. Extra: disable directory browsing globally ---
 Options -Indexes
-
-<IfModule mod_substitute.c>
-    Header set X-Substitute-Test "enabled"
-</IfModule>
