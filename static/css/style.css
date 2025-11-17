@@ -105,7 +105,7 @@ header.shrink {
   font-family: 'Sora', sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--primary);
+  color: var(--text);
   padding-top: 1rem;
 }
 

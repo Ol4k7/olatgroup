@@ -1,30 +1,50 @@
 # --- Enable Rewrite Engine ---
 RewriteEngine On
 
-# --- Cache Buster (global for all CSS & JS) ---
+# --- Cache Buster Version ---
 SetEnv CACHEBUST_VER "20251120-001"
 
+# --- 1. Rewrite URLs for CSS & JS requests (fallback) ---
 <IfModule mod_rewrite.c>
     RewriteCond %{REQUEST_URI} \.(css|js)$ [NC]
     RewriteRule ^(.+)$ $1?v=%{ENV:CACHEBUST_VER} [QSA,L]
 </IfModule>
 
-# --- 1. Block direct access to sensitive files ---
+# --- 2. Automatic injection of ?v= into CSS/JS links in HTML ---
+<IfModule mod_substitute.c>
+    AddOutputFilterByType SUBSTITUTE text/html
+    Substitute "s#(href|src)\s*=\s*([\"'])(?!https?:|//|data:|mailto:)([^\"']+\.(?:css|js))(?:\?[^\"']*)?([\"'])#$1=$2$3?v=${CACHEBUST_VER}$4#i"
+</IfModule>
+
+# --- 3. Set long cache for static assets ---
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|ico|woff2?|woff|ttf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    <FilesMatch "\.(html|htm|php)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# --- 4. Block direct access to sensitive files ---
 RewriteRule ^config\.php$ - [F,L]
 RewriteRule ^data/ - [F,L]
 
-# --- 2. Protect admin area ---
+# --- 5. Protect admin area ---
 # (Untouched)
 
-# --- 3. Protect API folder ---
+# --- 6. Protect API folder ---
 # RewriteRule ^api/ - [F,L]
 
-# --- 4. Prevent directory browsing for uploads ---
+# --- 7. Prevent directory browsing for uploads ---
 # RewriteCond %{REQUEST_URI} ^/public/projects/
 # RewriteRule ^.*$ - [R=403,L]
 
-# --- 5. Default file for root ---
+# --- 8. Default file for root ---
 DirectoryIndex index.php
 
-# --- 6. Extra: disable directory browsing globally ---
+# --- 9. Extra: disable directory browsing globally ---
 Options -Indexes
