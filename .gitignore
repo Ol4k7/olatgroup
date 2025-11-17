@@ -6,3 +6,4 @@ instance/
 public/projects/
 data/projects.json
 config.php
+uploads/projects/

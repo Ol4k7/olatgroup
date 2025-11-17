@@ -1,22 +1,23 @@
 <?php
-
-ini_set('upload_max_filesize', '10M');   // max 10 MB per file
-ini_set('post_max_size', '12M');         // max 12 MB POST
-ini_set('memory_limit', '128M');         // optional, ensure enough memory
-ini_set('max_execution_time', '300');    // optional, for slow uploads
-ini_set('max_input_time', '300');        // optional
+// === PHP upload configuration ===
+ini_set('upload_max_filesize', '10M');
+ini_set('post_max_size', '12M');
+ini_set('memory_limit', '128M');
+ini_set('max_execution_time', '300');
+ini_set('max_input_time', '300');
 
 session_start();
 require_once '../../config.php';
 
+// === Admin check ===
 if (!($_SESSION['admin'] ?? false)) {
     header('Location: login.php');
     exit;
 }
 
-// --- Constants ---
+// === Constants ===
 if (!defined('ALLOWED_EXT')) define('ALLOWED_EXT', ['jpg','jpeg','png','gif','webp']);
-if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', __DIR__ . '/../../public/projects');
+if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', __DIR__ . '/../../uploads/projects'); // safe folder
 if (!defined('DATA_FILE')) define('DATA_FILE', __DIR__ . '/../../data/projects.json');
 
 // Ensure upload directory exists
@@ -28,9 +29,8 @@ if (!is_dir(UPLOAD_DIR)) {
 
 $status = null;
 
+// === Handle form submission ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // --- Fetch inputs ---
     $title    = trim($_POST['title'] ?? '');
     $desc     = trim($_POST['description'] ?? '');
     $service  = $_POST['service'] ?? '';
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $allowed_services = ['facilities', 'digital', 'gallery'];
 
-    // --- 1. Validate basic fields ---
+    // --- 1. Basic validation ---
     if ($title === '') {
         $status = ['error' => 'Project title is required'];
     } elseif (!in_array($service, $allowed_services)) {
@@ -53,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$image || $image['error'] === UPLOAD_ERR_NO_FILE) {
             $status = ['error' => 'An image is required'];
         } elseif ($image['error'] !== UPLOAD_ERR_OK) {
-            // Handle all PHP upload errors
             $php_errors = [
                 1 => 'The uploaded file exceeds the upload_max_filesize directive.',
                 2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive in the HTML form.',
@@ -66,19 +65,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msg = $php_errors[$image['error']] ?? 'Unknown upload error';
             $status = ['error' => "File upload error: $msg"];
         } else {
-            // Check file extension
             $ext = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
             if (!in_array($ext, ALLOWED_EXT)) {
                 $status = ['error' => 'Invalid image type. Allowed: ' . implode(', ', ALLOWED_EXT)];
-            }
-            // Optional: file size limit (10MB)
-            elseif ($image['size'] > 10 * 1024 * 1024) {
+            } elseif ($image['size'] > 10 * 1024 * 1024) {
                 $status = ['error' => 'File too large. Max 10MB allowed'];
             }
         }
     }
 
-    // --- 3. Service-specific validation ---
+    // --- 3. Digital service validation ---
     if (!$status && $service === 'digital') {
         if (!$type) {
             $status = ['error' => 'Select project type (Web or Graphics)'];
@@ -89,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // --- 4. Process upload if no errors ---
+    // --- 4. Process upload ---
     if (!$status) {
         $filename = uniqid('proj_') . '.' . $ext;
         $filepath = UPLOAD_DIR . "/$filename";
@@ -97,30 +93,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!move_uploaded_file($image['tmp_name'], $filepath)) {
             $status = ['error' => 'Upload failed. Check directory permissions'];
         } else {
-            // Load JSON data
             $data = file_exists(DATA_FILE) ? json_decode(file_get_contents(DATA_FILE), true) : [];
-
-            // Initialize service array if missing
             if (!isset($data[$service])) $data[$service] = [];
 
-            // Create entry
             $entry = [
                 'id'          => uniqid(),
                 'title'       => $title,
                 'description' => $desc,
-                'service'     => $service,
+                // --- Public path uses /public/projects/ URL (symlink or PHP serving) ---
                 'image'       => "/public/projects/$filename",
+                'service'     => $service,
                 'timestamp'   => date('c')
             ];
 
-            // Digital-specific fields
             if ($service === 'digital') {
                 $entry['type'] = $type;
                 if ($type === 'web') $entry['url'] = $url;
                 if ($type === 'graphics') $entry['category'] = $category;
             }
 
-            // Append and save
             $data[$service][] = $entry;
 
             if (file_put_contents(DATA_FILE, json_encode($data, JSON_PRETTY_PRINT))) {
@@ -139,6 +130,7 @@ if (isset($_GET['logout'])) {
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
