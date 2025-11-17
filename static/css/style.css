@@ -78,8 +78,8 @@ header.shrink {
 }
 
 .logo img {
-  width: 200px;
-  height: 90px;
+  width: 60px;
+  height: 60px;
   background: none;
   object-fit: cover;
 }
@@ -89,6 +89,7 @@ header.shrink {
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--text);
+  padding-top: 1rem;
 }
 
 .logo:hover {
@@ -101,7 +102,7 @@ header.shrink {
 
 
 .logo span {
-  color: var(--text);
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -207,7 +208,7 @@ nav ul li a.active::after {
 }
 
 .hero-image:hover {
-  transform: scale(1.05) rotate(1deg);
+  transform: scale(1.05);
 }
 
 .hero-image img {
