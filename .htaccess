@@ -2,15 +2,15 @@
 RewriteEngine On
 
 # --- Cache Buster Version ---
-SetEnv CACHEBUST_VER "20251120-002"
+SetEnv CACHEBUST_VER "20251120-003"
 
-# --- 1. Rewrite URLs for CSS & JS requests (fallback) ---
+# --- 1. Rewrite CSS/JS requests (fallback) ---
 <IfModule mod_rewrite.c>
     RewriteCond %{REQUEST_URI} \.(css|js)$ [NC]
     RewriteRule ^(.+)$ $1?v=%{ENV:CACHEBUST_VER} [QSA,L]
 </IfModule>
 
-# --- 2. Automatic injection of ?v= into CSS/JS links in HTML ---
+# --- 2. Inject ?v=CACHEBUST_VER into CSS/JS links in HTML ---
 <IfModule mod_substitute.c>
     AddOutputFilterByType SUBSTITUTE text/html
     Substitute "s#(href|src)\s*=\s*([\"'])(?!https?:|//|data:|mailto:)([^\"']+\.(?:css|js))(?:\?[^\"']*)?([\"'])#$1=$2$3?v=${CACHEBUST_VER}$4#i"
