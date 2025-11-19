@@ -20,9 +20,11 @@
   <style>
     /* Gallery Section Styles */
     .gallery-section {
-      padding: 4rem 2rem;
+      padding: 0.5rem 2rem ;
       max-width: 1200px;
       margin: 0 auto;
+      bottom: 2px;
+      padding-bottom: 0.5rem;
     }
 
     .gallery-section h2 {
@@ -56,7 +58,7 @@
 
     .gallery-item img {
       width: 100%;
-      height: 50%;
+      height: 70%;
       display: block;
       border-radius: 8px;
     }
