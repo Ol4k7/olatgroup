@@ -120,7 +120,7 @@
       </div>
     </div>
     <div class="hero-image">
-      <img src="/static/webimage.jpg" alt="Illustration">
+      <img src="/static/webimage.jpg?v=1" alt="Illustration">
     </div>
   </section>
 
