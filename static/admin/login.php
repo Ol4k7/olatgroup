@@ -1,7 +1,7 @@
 <?php
 // ===== SESSION SECURITY =====
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1);      // requires https
+ini_set('session.cookie_secure', 0);      // requires https
 ini_set('session.use_strict_mode', 1);
 session_start();
 
@@ -24,6 +24,8 @@ if ($_SESSION['attempts'] >= 5) {
         session_regenerate_id(true);
 
         $_SESSION['admin'] = true;
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['last_activity'] = time();
         $_SESSION['attempts'] = 0; // reset attempts
 
         header('Location: upload.php');

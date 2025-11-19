@@ -91,6 +91,18 @@
       cursor: pointer;
     }
 
+    .modal-inner {
+      text-align: center;
+    }
+
+    .modal-title {
+      margin-top: 1rem;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+  }
+
+
     .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; overflow: hidden; }
     .modal-content { max-width: 90%; max-height: 90%; border-radius: 8px; transition: transform 0.3s ease; cursor: grab; }
   </style>
@@ -149,7 +161,7 @@
         usort($galleryItems, fn($a, $b) => strtotime($b['timestamp']) - strtotime($a['timestamp']));
         foreach ($galleryItems as $item) {
           if (isset($item['image'])) {
-             echo '<div class="gallery-item" onclick="openModal(\'' . htmlspecialchars($item['image']) . '\')">';
+            echo '<div class="gallery-item" data-title="' . htmlspecialchars($item['title']) . '">';
             echo '<img src="' . htmlspecialchars($item['image']) . '" alt="' . htmlspecialchars($item['title'] ?? 'Gallery Image') . '">';
             echo '</div>';
           }
@@ -160,7 +172,11 @@
     <!-- Modal for Tap to Expand -->
     <div id="imageModal" class="modal" onclick="closeModal()">
       <span class="close-modal" onclick="closeModal()">&times;</span>
-      <img class="modal-content" id="modalImage">
+
+       <div class="modal-inner">
+          <img class="modal-content" id="modalImage">
+          <p id="modalTitle" class="modal-title"></p>
+       </div>
     </div>
   </section>
 
@@ -171,31 +187,48 @@
 
   <!-- JavaScript for Tap to Expand Modal -->
   <script>
-    function openModal(src) {
-      document.getElementById('modalImage').src = src;
-      document.getElementById('imageModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('imageModal').style.display = 'none';
-    }
+    const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
     const galleryImages = Array.from(document.querySelectorAll('.gallery-item img'));
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
     let currentIndex = 0;
 
     // Open modal
-    galleryImages.forEach((img, idx) => {
+    function openModal(src, title, index) {
+      currentIndex = index;
+      modalImg.src = src;
+      modalTitle.textContent = title;
+      modal.style.display = 'flex';
+    }
+
+    galleryItems.forEach((item, idx) => {
+      const img = item.querySelector('img');
+      const title = item.getAttribute('data-title');
+
       img.addEventListener('click', () => {
-        currentIndex = idx;
-        showImage();
-        modal.style.display = 'flex';
+        openModal(img.src, title, idx);
       });
     });
 
-    function showImage() {
-      modalImg.src = galleryImages[currentIndex].src;
+    function updateModal() {
+      const item = galleryItems[currentIndex];
+      const title = item.getAttribute('data-title');
+      const img = item.querySelector('img');
+
+      modalImg.src = img.src;
+      modalTitle.textContent = title;
     }
+
+    function showImage() {
+      const item = galleryItems[currentIndex];
+      const title = item.getAttribute('data-title');
+      const img = item.querySelector('img');
+
+      modalImg.src = img.src;
+      modalTitle.textContent = title;
+    }
+
 
     function closeModal() {
       modal.style.display = 'none';
@@ -235,12 +268,12 @@
 
     function prevImage() {
       currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
-      showImage();
+      updateModal();
     }
 
     function nextImage() {
       currentIndex = (currentIndex + 1) % galleryImages.length;
-      showImage();
+      updateModal();
     }
   </script>
 </body>

@@ -9,6 +9,28 @@ ini_set('max_input_time', '300');
 session_start();
 require_once '../../config.php';
 
+
+// Timeout in seconds (e.g., 1 minute)
+$timeout = 1 * 60;
+
+// Check if admin is logged in
+if (!isset($_SESSION['admin_logged_in'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Check last activity
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout) {
+    // Session expired: log out admin
+    session_unset();
+    session_destroy();
+    header("Location: login.php");
+    exit;
+}
+
+// Update last activity timestamp
+$_SESSION['last_activity'] = time();
+
 // === Admin check ===
 if (!($_SESSION['admin'] ?? false)) {
     header('Location: login.php');
@@ -255,6 +277,26 @@ if (isset($_GET['logout'])) {
     }
 
     loadProjects();
+    
+    let idleTime = 1 * 60 * 1000; // 1 minute
+    let idleTimer;
+
+    function resetTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+        // Redirect to login page when inactive
+            window.location.href = 'login.php';
+        }, idleTime);
+    }
+
+    // Reset on user interaction
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    window.addEventListener('scroll', resetTimer);
+    window.addEventListener('click', resetTimer);
+
+    resetTimer(); // start timer initially
+
   </script>
 </body>
 </html>
