@@ -200,11 +200,11 @@ nav ul li a.active::after {
 
 /* === HERO IMAGE === */
 .hero-image {
-  width: 260px;
-  height: 260px;
+  width: 270px;
+  height: 350px;
   border-radius:50px;
   overflow: hidden;
-  border: 5px solid var(--primary);
+  border: 3px solid var(--primary);
   box-shadow: 0 12px 30px var(--shadow);
   margin: 0 auto;
   transition: transform 0.5s ease;
@@ -617,7 +617,7 @@ footer {
 @media (max-width: 1024px) {
   .hero { padding: 9rem 2rem 3rem; }
   .hero-content h2 { font-size: 2.3rem; }
-  .hero-image { width: 220px; height: 220px; }
+  .hero-image { width: 200px; height: 280px; }
 }
 
 @media (max-width: 768px) {
@@ -649,7 +649,7 @@ footer {
 
   .hero { padding: 9rem 1.5rem 2.5rem; text-align: center; }
   .hero-content h2 { font-size: 2rem; }
-  .hero-image { width: 180px; height: 180px; }
+  .hero-image { width: 200px; height: 270px; }
 
   .flip-card { height: 480px; }
   .flip-front h2, .flip-back h2 { font-size: 1.7rem; }
@@ -658,7 +658,7 @@ footer {
 @media (max-width: 480px) {
   .hero { display:flex; align-items: center; justify-content: center; text-align: center; padding: 9rem 0.2rem 1rem; width: 100%; margin-top: 1.5rem; }
   .hero-content h2 { font-size: 1.8rem; }
-  .hero-image { width: 190px; height: 190px; border: 4px solid var(--primary); }
+  .hero-image { width: 200px; height: 270px; border: 4px solid var(--primary); }
   .btn.dark{display: inline-flex; align-items: center; justify-content: center; padding: 12px 28px;}
 
   .flip-card { height: 480px; }
@@ -884,7 +884,7 @@ footer {
 
   .flip-front,
   .flip-back {
-    padding: 1.8rem;             
+    padding: 2rem;             
   }
 
   .flip-front h2,
