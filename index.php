@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Olat Group | Innovating Spaces & Technology</title>
+  <meta name="description" content="Olat Group: Premier UK facility management and digital solutions for efficient, innovative spaces. Cleaning, maintenance, web design & more." />
+  <title>Olat Group Limited | Innovating Spaces & Technology</title>
   <link rel="stylesheet" href="/static/css/style.css?v=20251119.1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -112,7 +113,7 @@
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="/static/weblogo.png" alt="Olat Group Logo">
+      <img src="/static/weblogo.png?v=2" alt="Olat Group Logo">
       <h1>Olat Group <span>Limited</span></h1>
     </a>
     <button class="menu-toggle" id="menuToggle">&#9776;</button>
@@ -134,7 +135,7 @@
       </div>
     </div>
     <div class="hero-image">
-      <img src="/static/webimage.jpg?v=1" alt="Illustration">
+      <img src="/static/webimage.jpg?v=1" alt="Innovative facility management illustration">
     </div>
   </section>
 
