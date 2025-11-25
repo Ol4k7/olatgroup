@@ -318,6 +318,7 @@ nav ul li a.active::after {
   text-align: left;
   transition: var(--transition);
   border: 1px solid rgba(255, 255, 255, 0.4);
+  
 }
 
 .info-card:hover {

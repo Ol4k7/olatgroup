@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Olat Group: Premier UK facility management and digital solutions for efficient, innovative spaces. Cleaning, maintenance, web design & more." />
   <title>Olat Group Limited | Innovating Spaces & Technology</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=20251119.1">
+  <link rel="stylesheet" href="/static/css/style.css?v=20251125">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -141,12 +141,14 @@
 
   <section class="info-section">
     <div class="info-card">
-      <h3>FACILITIES</h3>
-      <p>Olat Group Limited is a leading provider of facility management and digital solutions. We ensure that businesses and spaces operate at their highest efficiency.</p>
+      <h3>FACILITY MANAGEMENT</h3>
+      <p> <strong>STREAMLINE YOUR OPERATIONS</strong></p>
+      <p>We ensure your business premises are safe, clean, and fully functional.</p>
     </div>
     <div class="info-card">
       <h3>DIGITAL SOLUTIONS</h3>
-      <p>We offer a range of digital services, such as web design, graphic design, and data analytics to help businesses thrive in the modern era.</p>
+      <p><strong>AMPLIFY YOUR BRAND</strong></p>
+      <p>From captivating web design to insightful data analytics, we build the modern digital tools.</p>
     </div>
   </section>
 
