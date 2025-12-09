@@ -42,29 +42,29 @@ document.addEventListener("DOMContentLoaded", () => {
     .forEach(el => observer.observe(el));
 
   // === Contact Form Handler ===
-  const contactForm = document.getElementById("contactForm");
-  if (contactForm) {
-    contactForm.addEventListener("submit", e => {
-      e.preventDefault();
+  // const contactForm = document.getElementById("contactForm");
+  // if (contactForm) {
+  //   contactForm.addEventListener("submit", e => {
+  //     e.preventDefault();
 
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const message = document.getElementById("message").value.trim();
+  //     const name = document.getElementById("name").value.trim();
+  //     const email = document.getElementById("email").value.trim();
+  //     const message = document.getElementById("message").value.trim();
 
-      if (!name || !email || !message) {
-        alert("Please fill in all fields before sending.");
-        return;
-      }
+  //     if (!name || !email || !message) {
+  //       alert("Please fill in all fields before sending.");
+  //       return;
+  //     }
 
-      const recipient = "info@olatgrouplimited.co.uk";
-      const subject = encodeURIComponent(`New Message from ${name}`);
-      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-      const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
+  //     const recipient = "info@olatgrouplimited.co.uk";
+  //     const subject = encodeURIComponent(`New Message from ${name}`);
+  //     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+  //     const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
 
-      window.open(mailtoLink, "_blank");
-      alert("Opening your email app…");
-    });
-  }
+  //     window.open(mailtoLink, "_blank");
+  //     alert("Opening your email app…");
+  //   });
+  // }
 
   // === FLIP CARD LOGIC (Only Active Feature) ===
   document.querySelectorAll('.flip-card').forEach(card => {
