@@ -17,7 +17,7 @@
         $msgClass = 'alert-danger';
       } else {
         // CONFIGURATION
-        $toEmail = 'tolulopetheophilus96@gmail.com'; // Your personal email
+        $toEmail = 'info@olatgrouplimited.co.uk'; // Your personal email
         $subject = 'New Message from Olat Group Website'; // Email Subject
         
         // Email Body Layout
