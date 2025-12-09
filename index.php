@@ -122,7 +122,7 @@
         <li><a href="index.php" class="active">Home</a></li>
         <li><a href="/static/about.html">About Us</a></li>
         <li><a href="/static/services.html">Services</a></li>
-        <li><a href="/static/contact.html">Contact</a></li>
+        <li><a href="/static/contact.php">Contact</a></li>
       </ul>
     </nav>
   </header>
