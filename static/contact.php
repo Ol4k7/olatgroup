@@ -154,6 +154,6 @@
     &copy; <span id="year"></span> Olat Group | All Rights Reserved
   </footer>
 
-  <script src="js/script.js?v=20251119"></script>
+  <script src="js/script.js?v=20251209"></script>
 </body>
 </html>
