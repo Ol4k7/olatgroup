@@ -71,13 +71,17 @@
 
     <form id="contactForm" class="contact-form" action="https://formsubmit.co/info@olatgrouplimited.co.uk" method="POST">
       
-      <input type="hidden" name="_next" value="https://olatgrouplimited.co.uk/static/contact.php">
+      <input type="hidden" name="_next" value="https://olatgrouplimited.co.uk/static/contact.php?sent=true">
 
       <input type="hidden" name="_subject" value="New Inquiry - Olat Group Website">
 
       <input type="text" name="_honey" style="display:none">
 
       <input type="hidden" name="_captcha" value="false">
+
+      <div id="successMessage" style="display:none; background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb;">
+        <i class="fas fa-check-circle"></i> Message sent successfully! We will contact you soon.
+      </div>
 
       <input type="text" name="name" id="name" placeholder="Your Name" required />
       
@@ -94,5 +98,14 @@
   </footer>
 
   <script src="js/script.js?v=20251209"></script>
+
+  <script>
+  
+  if (window.location.search.includes('sent=true')) {
+    document.getElementById('successMessage').style.display = 'block';
+    document.getElementById('contactForm').scrollIntoView({ behavior: 'smooth' });
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+</script>
 </body>
 </html>
