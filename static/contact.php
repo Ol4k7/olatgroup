@@ -1,60 +1,3 @@
-<?php
-  // --- OLAT GROUP CONTACT FORM LOGIC ---
-  $msg = '';
-  $msgClass = '';
-
-  // Check if form was submitted
-  if(filter_has_var(INPUT_POST, 'submit')){
-    $name = htmlspecialchars($_POST['name']);
-    $email = htmlspecialchars($_POST['email']);
-    $message = htmlspecialchars($_POST['message']);
-
-    // Check Required Fields
-    if(!empty($email) && !empty($name) && !empty($message)){
-      // Check Email Validity
-      if(filter_var($email, FILTER_VALIDATE_EMAIL) === false){
-        $msg = 'Please use a valid email address';
-        $msgClass = 'alert-danger';
-      } else {
-        // CONFIGURATION
-        $toEmail = 'info@olatgrouplimited.co.uk'; // Your personal email
-        $subject = 'New Message from Olat Group Website'; // Email Subject
-        
-        // Email Body Layout
-        $body = "<h2>Contact Request</h2>
-                 <p><strong>Name:</strong> $name</p>
-                 <p><strong>Email:</strong> $email</p>
-                 <p><strong>Message:</strong><br>$message</p>";
-
-        // HEADERS
-        $headers = "MIME-Version: 1.0" ."\r\n";
-        $headers .="Content-Type:text/html;charset=UTF-8" . "\r\n";
-
-        // CRITICAL: This MUST match your hosting domain to prevent Spam
-        $headers .= "From: Olat Group <noreply@olatgrouplimited.co.uk>" . "\r\n"; 
-        
-        // Reply to the customer
-        $headers .= "Reply-To: " . $email . "\r\n";
-
-        // Attempt to send
-        if(mail($toEmail, $subject, $body, $headers)){
-          $msg = 'Message sent successfully!';
-          $msgClass = 'alert-success';
-          // Clear form after success
-          $name = ''; $email = ''; $message = '';
-          $_POST = array(); 
-        } else {
-          $msg = 'Message not sent (Server Error)';
-          $msgClass = 'alert-danger';
-        }
-      }
-    } else {
-      $msg = 'Please fill in all fields';
-      $msgClass = 'alert-danger';
-    }
-  }
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,11 +18,6 @@
   <link rel="manifest" href="/favicon_io/site.webmanifest">
   <link rel="icon" href="/favicon_io/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/favicon_io/favicon.ico" type="image/x-icon">
-
-  <style>
-    .alert-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; border: 1px solid #c3e6cb; }
-    .alert-danger { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; border: 1px solid #f5c6cb; }
-  </style>
 </head>
 <body>
 
@@ -94,7 +32,8 @@
         <li><a href="/">Home</a></li>
         <li><a href="/static/about.html">About Us</a></li>
         <li><a href="/static/services.html">Services</a></li>
-        <li><a href="/contact.php" class="active">Contact</a></li> </ul>
+        <li><a href="/contact.php" class="active">Contact</a></li> 
+      </ul>
     </nav>
   </header>
 
@@ -130,25 +69,23 @@
       </ul>
     </div>
 
-    <form id="contactForm" class="contact-form" method="POST" action="">
+    <form id="contactForm" class="contact-form" action="https://formsubmit.co/info@olatgrouplimited.co.uk" method="POST">
       
-      <?php if($msg != ''): ?>
-        <div class="<?php echo $msgClass; ?>">
-          <?php echo $msg; ?>
-        </div>
-      <?php endif; ?>
+      <input type="hidden" name="_subject" value="New Inquiry - Olat Group Website">
 
-      <input type="text" name="name" id="name" placeholder="Your Name" required 
-             value="<?php echo isset($name) ? $name : ''; ?>" />
+      <input type="text" name="_honey" style="display:none">
+
+      <input type="hidden" name="_captcha" value="false">
+
+      <input type="text" name="name" id="name" placeholder="Your Name" required />
       
-      <input type="email" name="email" id="email" placeholder="Your Email" required 
-             value="<?php echo isset($email) ? $email : ''; ?>" />
+      <input type="email" name="email" id="email" placeholder="Your Email" required />
       
-      <textarea name="message" id="message" placeholder="Your Message" rows="5" required><?php echo isset($message) ? $message : ''; ?></textarea>
+      <textarea name="message" id="message" placeholder="Your Message" rows="5" required></textarea>
       
-      <button type="submit" name="submit" class="btn gold">Send Message</button>
+      <button type="submit" class="btn gold">Send Message</button>
     </form>
-  </section>
+    </section>
 
   <footer>
     &copy; <span id="year"></span> Olat Group | All Rights Reserved
