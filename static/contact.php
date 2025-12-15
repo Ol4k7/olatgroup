@@ -71,6 +71,8 @@
 
     <form id="contactForm" class="contact-form" action="https://formsubmit.co/info@olatgrouplimited.co.uk" method="POST">
       
+      <input type="hidden" name="_next" value="https://olatgrouplimited.co.uk/static/contact.php">
+
       <input type="hidden" name="_subject" value="New Inquiry - Olat Group Website">
 
       <input type="text" name="_honey" style="display:none">
