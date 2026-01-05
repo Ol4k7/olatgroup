@@ -186,7 +186,7 @@
   </section>
 
   <footer>
-    &copy; 2025 Olat Group | All Rights Reserved
+    &copy; <span id="year"></span> Olat Group | All Rights Reserved
   </footer>
   <script src="/static/js/script.js?v=20251119"></script>
 
