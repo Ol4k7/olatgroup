@@ -33,8 +33,8 @@ $meta_desc  = $seo[$current_page]['desc'] ?? 'Innovating Spaces & Technology thr
 
 // 2. AUTO-VERSIONING (Cache Busting)
 function auto_version($file) {
-    $folder = (strpos($_SERVER['REQUEST_URI'], '/olatgroup') !== false) ? '/olatgroup' : '';
-    $web_path = $folder . $file;
+    // This check was looking for /olatgroup, which is why it failed on live
+    $web_path = $file; 
     $system_path = $_SERVER['DOCUMENT_ROOT'] . $web_path;
 
     if (file_exists($system_path)) {

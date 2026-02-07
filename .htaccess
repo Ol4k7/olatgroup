@@ -1,50 +1,63 @@
 # --- Enable Rewrite Engine ---
 RewriteEngine On
 
-# --- 1. Fix URL Resolve (Audit Fix) ---
-# Redirects www to non-www to prevent duplicate content [cite: 26, 34]
+# --- 1. Smart Development Path Protection (Audit Fix) ---
+# Allow individual image files to load so they appear on your site
+# But redirect any attempt to browse the folder or non-file paths to home
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^olatgroup(/.*)?$ https://olatgrouplimited.co.uk/ [R=301,L]
+
+# --- 2. Fix URL Resolve (Audit Fix) ---
+# Consolidates www and non-www to prevent duplicate content penalties
 RewriteCond %{HTTP_HOST} ^www\.olatgrouplimited\.co\.uk [NC]
 RewriteRule ^(.*)$ https://olatgrouplimited.co.uk/$1 [L,R=301]
 
-# --- 2. Force HTTPS (Audit Fix) ---
+# --- 3. Force HTTPS (Audit Fix) ---
+# Ensures secure SSL connection as required by the audit 
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# --- 3. Directory Browsing & Default File ---
+# --- 4. Global Directory Protection ---
+# Disable listing of any folder contents site-wide
 Options -Indexes
 DirectoryIndex index.php
 
-# --- 4. Security Headers (FIXED FOR MODALS & ICONS) ---
+# --- 5. Security Headers ---
 <IfModule mod_headers.c>
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-Content-Type-Options "nosniff"
     Header set X-XSS-Protection "1; mode=block"
-    
-    # Updated CSP: Added Cloudflare for icons and 'unsafe-inline' for JS functionality
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;"
+    # CSP: Allows Google Fonts, FontAwesome, and internal scripts
+    Header set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
 </IfModule>
 
-# --- 5. Optimized Cache Control ---
+# --- 6. Optimized Cache Control ---
+# Addresses "Asset Performance" audit warnings
 <IfModule mod_headers.c>
-    # Asset Caching [cite: 87, 92]
     <FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|ico|webp|woff2?)$">
         Header set Cache-Control "public, max-age=2592000, must-revalidate"
     </FilesMatch>
-
     <FilesMatch "\.(html|htm|php)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
     </FilesMatch>
 </IfModule>
 
-# --- 6. Critical Security Blocks ---
+# --- 7. Critical Security Blocks ---
+# Blocks access to system logic and sensitive files
 RewriteRule ^config/ - [F,L]
 RewriteRule ^data/ - [F,L]
+RewriteRule ^PHPMailer/ - [F,L]
 RewriteRule ^(\.gitignore|\.htaccess|composer\.json|package\.json)$ - [F,L]
 
-# --- 7. Clean URLs ---
+# --- 8. Clean URLs & .php Redirection ---
+# Redirects /about.php to /about for a cleaner SEO profile
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.php [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# Internally maps clean URLs back to .php files
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
-# --- 8. Admin Protection ---
+# --- 9. Admin Protection ---
 RewriteRule ^admin/$ - [F,L]

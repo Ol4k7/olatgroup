@@ -3,12 +3,16 @@
 User-agent: *
 Allow: /
 
+# Block access to the old development directory (Audit Fix)
+Disallow: /olatgroup/
+
 # Block access to sensitive system folders
 Disallow: /admin/
 Disallow: /config/
 Disallow: /includes/
 Disallow: /data/
 Disallow: /PHPMailer/
+Disallow: /uploads/
 
 # Point to your Sitemap (Audit Fix)
 Sitemap: https://olatgrouplimited.co.uk/sitemap.xml
