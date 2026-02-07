@@ -1,9 +1,25 @@
-__pycache__/
-*.pyc
-.env
-*.db
-instance/
-public/projects/
-data/projects.json
-config.php
-uploads/projects/
+# --- Database & Credentials ---
+/config/config.php
+/config/db_connect.php
+
+# --- User Uploads (The physical images) ---
+/public/projects/*
+# But keep the folder structure
+!/public/projects/.htaccess
+
+# --- Old Data ---
+/data/projects.json
+
+# --- OS & IDE Junk ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+project_tree.txt
+
+# --- Temporary/Log Files ---
+*.log
+error_log
+
+# Ignore the main .htaccess so I can manage it manually on Hostinger
+/.htaccess

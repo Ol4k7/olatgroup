@@ -1,0 +1,14 @@
+# --- robots.txt for olatgrouplimited.co.uk ---
+
+User-agent: *
+Allow: /
+
+# Block access to sensitive system folders
+Disallow: /admin/
+Disallow: /config/
+Disallow: /includes/
+Disallow: /data/
+Disallow: /PHPMailer/
+
+# Point to your Sitemap (Audit Fix)
+Sitemap: https://olatgrouplimited.co.uk/sitemap.xml

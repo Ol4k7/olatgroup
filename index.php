@@ -1,285 +1,180 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Olat Group: Premier UK facility management and digital solutions for efficient, innovative spaces. Cleaning, maintenance, web design & more." />
-  <title>Olat Group Limited | Innovating Spaces & Technology</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=20251125">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<?php 
+// 1. Include the brain - handles the database and the relative pathing logic
+include 'includes/header.php'; 
+?>
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
-  <link rel="manifest" href="/favicon_io/site.webmanifest">
-  <link rel="icon" href="/favicon_io/favicon.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="/favicon_io/favicon.ico" type="image/x-icon">
+<style>
+  .gallery-section { padding: 40px 20px; text-align: center; }
+  .gallery-grid { 
+    display: flex; 
+    overflow-x: auto; 
+    gap: 15px; 
+    padding: 20px 0; 
+    scroll-snap-type: x mandatory; 
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+  }
+  .gallery-grid::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome/Safari */
 
-  <!-- Styles for the gallery section and modal -->
-  <style>
-    /* Gallery Section Styles */
-    .gallery-section {
-      padding: 0.5rem 2rem ;
-      max-width: 1200px;
-      margin: 0 auto;
-      bottom: 2px;
-      padding-bottom: 0.5rem;
-    }
+  .gallery-item { 
+    flex: 0 0 auto; 
+    width: 250px; 
+    scroll-snap-align: center; 
+    cursor: pointer; 
+    transition: transform 0.3s ease; 
+  }
+  .gallery-item:hover { transform: scale(1.05); }
+  .gallery-item img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
-    .gallery-section h2 {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+  /* THE MODAL (FIXED POSITIONING) */
+  .modal { 
+    display: none; 
+    position: fixed; 
+    z-index: 9999; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0, 0, 0, 0.95); 
+    justify-content: center; 
+    align-items: center; 
+    flex-direction: column;
+  }
+  .modal-inner { position: relative; text-align: center; max-width: 90%; }
+  .modal-content { max-width: 100%; max-height: 80vh; border-radius: 8px; }
+  .modal-title { color: #fff; margin-top: 15px; font-size: 1.2rem; font-family: 'Sora', sans-serif; }
+  .close-modal { 
+    position: absolute; 
+    top: -50px; right: 0; 
+    color: #fff; font-size: 40px; 
+    cursor: pointer; 
+  }
+</style>
 
-    .gallery-grid {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-      padding-bottom: 1rem;
-    }
+<section class="hero">
+  <div class="hero-content">
+    <h2>We Build Your Digital Presence and Maintain Your Physical Space.</h2>
+    <div class="hero-buttons">
+      <a href="services.php#digital" class="btn dark">OUR EXPERTISE</a>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="<?php echo auto_version('/static/webimage.jpg'); ?>" alt="Facility Management and Digital Solutions">
+  </div>
+</section>
 
-    .gallery-item {
-      flex: 0 0 auto;
-      width: 200px;
-      scroll-snap-align:start;
-      cursor: pointer;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-      transition: transform 0.3s ease;
-    }
+<section class="info-section">
+  <div class="info-card">
+    <h3>FACILITY MANAGEMENT</h3>
+    <p><strong>STREAMLINE YOUR OPERATIONS</strong></p>
+    <p>We ensure your business premises are safe, clean, and fully functional.</p>
+  </div>
+  <div class="info-card">
+    <h3>DIGITAL SOLUTIONS</h3>
+    <p><strong>AMPLIFY YOUR BRAND</strong></p>
+    <p>From captivating web design to insightful data analytics, we build the modern digital tools.</p>
+  </div>
+</section>
 
-    .gallery-item:hover {
-      transform: scale(1.05);
-    }
+<section class="gallery-section">
+  <h2>Our Gallery</h2>
 
-    .gallery-item img {
-      width: 100%;
-      height: 70%;
-      display: block;
-      border-radius: 8px;
-    }
+  <div class="gallery-grid">
+    <?php
+      try {
+          // Fetch items marked as 'gallery' in your SQL database
+          $stmt = $pdo->prepare("SELECT * FROM projects WHERE service_type = 'gallery' ORDER BY created_at DESC");
+          $stmt->execute();
+          $galleryItems = $stmt->fetchAll();
 
-    /* Modal for Tap to Expand */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-    }
+          if (count($galleryItems) > 0) {
+              foreach ($galleryItems as $item) {
+                  // CORRECT XAMPP PATH: /olatgroup + /public/projects/filename.jpg
+                  $imagePath = '/olatgroup' . $item['image_path'];
+                  
+                  echo '<div class="gallery-item" data-title="' . htmlspecialchars($item['title']) . '">';
+                  echo '<img src="' . htmlspecialchars($imagePath) . '" alt="' . htmlspecialchars($item['title']) . '">';
+                  echo '</div>';
+              }
+          } else {
+              echo '<p style="color:#888;">No projects in gallery yet.</p>';
+          }
+      } catch (PDOException $e) {
+          echo '<p>Error loading gallery.</p>';
+      }
+    ?>
+  </div>
 
-    .modal-content {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 8px;
-    }
+  <div id="imageModal" class="modal">
+     <div class="modal-inner">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <p id="modalTitle" class="modal-title"></p>
+     </div>
+  </div>
+</section>
 
-    .close-modal {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      color: white;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+<script>
+  // SELECT ALL GALLERY ITEMS
+  const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImage');
+  const modalTitle = document.getElementById('modalTitle');
+  const closeBtn = document.querySelector('.close-modal');
+  let currentIndex = 0;
 
-    .modal-inner {
-      text-align: center;
-    }
-
-    .modal-title {
-      margin-top: 1rem;
-      color: white;
-      font-size: 1.2rem;
-      font-weight: 600;
+  // OPEN MODAL
+  function openModal(src, title, index) {
+    currentIndex = index;
+    modalImg.src = src;
+    modalTitle.textContent = title;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Stop page scroll
   }
 
-
-    .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; overflow: hidden; }
-    .modal-content { max-width: 90%; max-height: 90%; border-radius: 8px; transition: transform 0.3s ease; cursor: grab; }
-  </style>
-</head>
-<body>
-  <header>
-    <a href="/" class="logo">
-      <img src="/static/weblogo.png?v=2" alt="Olat Group Logo">
-      <h1>Olat Group <span>Limited</span></h1>
-    </a>
-    <button class="menu-toggle" id="menuToggle">&#9776;</button>
-    <nav>
-      <ul id="navList">
-        <li><a href="index.php" class="active">Home</a></li>
-        <li><a href="/static/about.html">About Us</a></li>
-        <li><a href="/static/services.html">Services</a></li>
-        <li><a href="/static/contact.php">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div class="hero-content">
-      <h2>We Build Your Digital Presence and Maintain Your Physical Space.</h2>
-      <div class="hero-buttons">
-        <a href="/static/services.html#digital" class="btn dark">OUR EXPERTISE</a>
-      </div>
-    </div>
-    <div class="hero-image">
-      <img src="/static/webimage.jpg?v=1" alt="Innovative facility management illustration">
-    </div>
-  </section>
-
-  <section class="info-section">
-    <div class="info-card">
-      <h3>FACILITY MANAGEMENT</h3>
-      <p> <strong>STREAMLINE YOUR OPERATIONS</strong></p>
-      <p>We ensure your business premises are safe, clean, and fully functional.</p>
-    </div>
-    <div class="info-card">
-      <h3>DIGITAL SOLUTIONS</h3>
-      <p><strong>AMPLIFY YOUR BRAND</strong></p>
-      <p>From captivating web design to insightful data analytics, we build the modern digital tools.</p>
-    </div>
-  </section>
-
-  <!-- New Gallery Section for Tap-to-Expand Images -->
-  <section class="gallery-section">
-    <h2>Our Gallery</h2>
-
-    <!-- Gallery Grid – PHP to list images from JSON data -->
-    <div class="gallery-grid">
-      <?php
-
-        require_once __DIR__ . '/config.php';
-        $data = json_decode(file_get_contents(DATA_FILE), true);
-        $galleryItems = $data['gallery'] ?? [];
-        usort($galleryItems, fn($a, $b) => strtotime($b['timestamp']) - strtotime($a['timestamp']));
-        foreach ($galleryItems as $item) {
-          if (isset($item['image'])) {
-            echo '<div class="gallery-item" data-title="' . htmlspecialchars($item['title']) . '">';
-            echo '<img src="' . htmlspecialchars($item['image']) . '" alt="' . htmlspecialchars($item['title'] ?? 'Gallery Image') . '">';
-            echo '</div>';
-          }
-        }
-      ?>
-    </div>
-
-    <!-- Modal for Tap to Expand -->
-    <div id="imageModal" class="modal" onclick="closeModal()">
-      <span class="close-modal" onclick="closeModal()">&times;</span>
-
-       <div class="modal-inner">
-          <img class="modal-content" id="modalImage">
-          <p id="modalTitle" class="modal-title"></p>
-       </div>
-    </div>
-  </section>
-
-  <footer>
-    &copy; <span id="year"></span> Olat Group | All Rights Reserved
-  </footer>
-  <script src="/static/js/script.js?v=20251119"></script>
-
-  <!-- JavaScript for Tap to Expand Modal -->
-  <script>
-    const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
-    const galleryImages = Array.from(document.querySelectorAll('.gallery-item img'));
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    const modalTitle = document.getElementById('modalTitle');
-    let currentIndex = 0;
-
-    // Open modal
-    function openModal(src, title, index) {
-      currentIndex = index;
-      modalImg.src = src;
-      modalTitle.textContent = title;
-      modal.style.display = 'flex';
-    }
-
-    galleryItems.forEach((item, idx) => {
-      const img = item.querySelector('img');
-      const title = item.getAttribute('data-title');
-
-      img.addEventListener('click', () => {
-        openModal(img.src, title, idx);
-      });
+  galleryItems.forEach((item, idx) => {
+    const img = item.querySelector('img');
+    const title = item.getAttribute('data-title');
+    img.addEventListener('click', () => { 
+      openModal(img.src, title, idx); 
     });
+  });
 
-    function updateModal() {
-      const item = galleryItems[currentIndex];
-      const title = item.getAttribute('data-title');
-      const img = item.querySelector('img');
+  // CLOSE MODAL
+  function closeModal() { 
+    modal.style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+  }
 
-      modalImg.src = img.src;
-      modalTitle.textContent = title;
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // NAVIGATION & SWIPE
+  function updateModal() {
+    const item = galleryItems[currentIndex];
+    const img = item.querySelector('img');
+    modalImg.src = img.src;
+    modalTitle.textContent = item.getAttribute('data-title');
+  }
+
+  function prevImage() {
+    currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+    updateModal();
+  }
+  function nextImage() {
+    currentIndex = (currentIndex + 1) % galleryItems.length;
+    updateModal();
+  }
+
+  // KEYBOARD SUPPORT
+  document.addEventListener('keydown', (e) => {
+    if (modal.style.display === 'flex') {
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+      if (e.key === 'Escape') closeModal();
     }
+  });
+</script>
 
-    function showImage() {
-      const item = galleryItems[currentIndex];
-      const title = item.getAttribute('data-title');
-      const img = item.querySelector('img');
-
-      modalImg.src = img.src;
-      modalTitle.textContent = title;
-    }
-
-
-    function closeModal() {
-      modal.style.display = 'none';
-    }
-
-    modal.addEventListener('click', closeModal);
-
-    // Swipe support
-    let startX = 0;
-    let isDragging = false;
-
-    modalImg.addEventListener('touchstart', e => {
-      startX = e.touches[0].clientX;
-    });
-
-    modalImg.addEventListener('touchend', e => {
-      const endX = e.changedTouches[0].clientX;
-      handleSwipe(startX, endX);
-    });
-
-    modalImg.addEventListener('mousedown', e => {
-      isDragging = true;
-      startX = e.clientX;
-      e.preventDefault();
-    });
-
-    modalImg.addEventListener('mouseup', e => {
-      if (!isDragging) return;
-      isDragging = false;
-      handleSwipe(startX, e.clientX);
-    });
-
-    function handleSwipe(start, end) {
-      if (end - start > 50) prevImage();
-      else if (start - end > 50) nextImage();
-    }
-
-    function prevImage() {
-      currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
-      updateModal();
-    }
-
-    function nextImage() {
-      currentIndex = (currentIndex + 1) % galleryImages.length;
-      updateModal();
-    }
-  </script>
-</body>
-</html>
+<?php 
+include 'includes/footer.php'; 
+?>

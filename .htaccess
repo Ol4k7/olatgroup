@@ -1,53 +1,50 @@
 # --- Enable Rewrite Engine ---
 RewriteEngine On
 
-# --- Cache Buster Version ---
-SetEnv CACHEBUST_VER "20251120-003"
+# --- 1. Fix URL Resolve (Audit Fix) ---
+# Redirects www to non-www to prevent duplicate content [cite: 26, 34]
+RewriteCond %{HTTP_HOST} ^www\.olatgrouplimited\.co\.uk [NC]
+RewriteRule ^(.*)$ https://olatgrouplimited.co.uk/$1 [L,R=301]
 
-# --- 1. Rewrite CSS/JS requests (fallback) ---
-<IfModule mod_rewrite.c>
-    RewriteCond %{REQUEST_URI} \.(css|js)$ [NC]
-    RewriteRule ^(.+)$ $1?v=%{ENV:CACHEBUST_VER} [QSA,L]
-</IfModule>
+# --- 2. Force HTTPS (Audit Fix) ---
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# --- 2. Inject ?v=CACHEBUST_VER into CSS/JS links in HTML ---
-<IfModule mod_substitute.c>
-    AddOutputFilterByType SUBSTITUTE text/html
-    Substitute "s#(href|src)\s*=\s*([\"'])(?!https?:|//|data:|mailto:)([^\"']+\.(?:css|js))(?:\?[^\"']*)?([\"'])#$1=$2$3?v=${CACHEBUST_VER}$4#i"
+# --- 3. Directory Browsing & Default File ---
+Options -Indexes
+DirectoryIndex index.php
 
-    # Optional: test if mod_substitute is active
-    Header set X-Substitute-Test "enabled"
-</IfModule>
-
-# --- 3. Set long cache for static assets ---
+# --- 4. Security Headers (FIXED FOR MODALS & ICONS) ---
 <IfModule mod_headers.c>
-    <FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|ico|woff2?|woff|ttf)$">
-        Header set Cache-Control "public, max-age=31536000, immutable"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Updated CSP: Added Cloudflare for icons and 'unsafe-inline' for JS functionality
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;"
+</IfModule>
+
+# --- 5. Optimized Cache Control ---
+<IfModule mod_headers.c>
+    # Asset Caching [cite: 87, 92]
+    <FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|ico|webp|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000, must-revalidate"
     </FilesMatch>
 
     <FilesMatch "\.(html|htm|php)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
-        Header set Pragma "no-cache"
-        Header set Expires "0"
     </FilesMatch>
 </IfModule>
 
-# --- 4. Block direct access to sensitive files ---
-RewriteRule ^config\.php$ - [F,L]
+# --- 6. Critical Security Blocks ---
+RewriteRule ^config/ - [F,L]
 RewriteRule ^data/ - [F,L]
+RewriteRule ^(\.gitignore|\.htaccess|composer\.json|package\.json)$ - [F,L]
 
-# --- 5. Protect admin area ---
-# (Untouched)
+# --- 7. Clean URLs ---
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
-# --- 6. Protect API folder ---
-# RewriteRule ^api/ - [F,L]
-
-# --- 7. Prevent directory browsing for uploads ---
-# RewriteCond %{REQUEST_URI} ^/public/projects/
-# RewriteRule ^.*$ - [R=403,L]
-
-# --- 8. Default file for root ---
-DirectoryIndex index.php
-
-# --- 9. Extra: disable directory browsing globally ---
-Options -Indexes
+# --- 8. Admin Protection ---
+RewriteRule ^admin/$ - [F,L]

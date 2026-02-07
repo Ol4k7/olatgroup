@@ -367,10 +367,11 @@ nav ul li a.active::after {
 
 .contact-list li {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.1rem;
-  font-size: 1.02rem;
+  /* Change flex-start to center for better alignment with the new circles */
+  align-items: center; 
+  gap: 1.2rem; /* Slightly more gap for the pulsing room */
+  margin-bottom: 1.5rem; /* More breathing room between items */
+  font-size: 1.05rem;
   color: var(--text);
   transition: color 0.3s;
 }
@@ -380,10 +381,45 @@ nav ul li a.active::after {
 }
 
 .contact-list i {
-  font-size: 1.35rem;
+  /* 1. Make icons bigger */
+  font-size: 1.6rem; 
   color: var(--primary);
-  width: 28px;
-  text-align: center;
+  
+  /* 2. Create the circular base */
+  width: 50px;
+  height: 50px;
+  background: rgba(0, 102, 255, 0.1); /* Light tint of your primary color */
+  border-radius: 50%;
+  
+  /* 3. Center the icon perfectly */
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  
+  /* 4. Setup for the pulse */
+  position: relative;
+  z-index: 1;
+  margin-right: 10px;
+  animation: ring-pulse 1.5s infinite ease-out; 
+}
+
+
+/* Animation Keyframes */
+@keyframes ring-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0.7;
+  }
+}
+
+/* Optional: Stop the pulse on hover or keep it going */
+.contact-list li:hover i::after {
+  border-color: var(--primary);
+  animation-duration: 1s; /* Speeds up pulse on hover */
 }
 
 .contact-list a {
